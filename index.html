@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: auto;">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sai Vaibhav — Full-Stack Developer & Creative Designer</title>
+
+  <!-- Preload Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+
+  <!-- Spline Viewer -->
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.72/build/spline-viewer.js"></script>
+
+  <style>
+    /* ─── RESET & BASE ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #040404;
+      --card-bg:   #0D0D0D;
+      --border:    #1A1A1A;
+      --text:      #FFFFFF;
+      --muted:     #888888;
+      --violet:    #7B2FFF;
+      --cyan:      #00F5FF;
+      --violet-dim: rgba(123,47,255,0.15);
+      --cyan-dim:   rgba(0,245,255,0.10);
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ─── CUSTOM CURSOR ────────────────────────────────────────── */
+    #cursor-dot {
+      position: fixed; top: 0; left: 0;
+      width: 8px; height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%,-50%);
+      transition: width .15s, height .15s, background .15s;
+    }
+    #cursor-ring {
+      position: fixed; top: 0; left: 0;
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%,-50%);
+      transition: width .3s, height .3s, border-color .3s;
+    }
+    body.hover-active #cursor-dot {
+      width: 12px; height: 12px; background: var(--violet);
+    }
+    body.hover-active #cursor-ring {
+      width: 52px; height: 52px; border-color: var(--violet);
+    }
+
+    /* ─── FRAME LOADER ──────────────────────────────────────────── */
+    #frame-loader {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 99995;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1.75rem;
+    }
+    #frame-loader.hidden { opacity: 0; pointer-events: none; }
+    .loader-logo {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800; font-size: 2.5rem;
+      color: var(--violet); letter-spacing: -0.02em;
+    }
+    .loader-label {
+      font-family: 'Manrope', sans-serif;
+      font-size: 1.1rem; font-weight: 600;
+      letter-spacing: 0.04em; color: rgba(255,255,255,0.8);
+    }
+    .loader-bar-wrap {
+      width: 260px; height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px; overflow: hidden;
+    }
+    .loader-bar-fill {
+      height: 100%; width: 0%;
+      background: var(--violet);
+      border-radius: 4px;
+      box-shadow: 0 0 12px rgba(123,47,255,0.6);
+      transition: width 0.08s linear;
+    }
+    .loader-percent {
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.9rem; font-weight: 600;
+      color: var(--muted); letter-spacing: 0.06em;
+      min-width: 4ch; text-align: center;
+    }
+
+    /* ─── FRAME SCROLL SECTION ───────────────────────────────────── */
+    #frame-scroll-section {
+      position: relative;
+      height: 12080px; /* 151 frames × 80px */
+      background: var(--bg);
+    }
+    @media (max-width: 768px) {
+      #frame-scroll-section { height: 6040px; } /* 151 × 40px */
+    }
+    #frame-sticky {
+      position: sticky; top: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    #frame-canvas {
+      display: block;
+      width: 100%; height: 100%;
+      background: #040404;
+    }
+    /* Full-screen fade overlay for exit transition */
+    #frame-fadeout {
+      position: absolute; inset: 0;
+      background: var(--bg);
+      opacity: 0; pointer-events: none;
+      z-index: 5;
+    }
+    /* Gradient progress bar at bottom edge */
+    #frame-progress-bar {
+      position: absolute; bottom: 0; left: 0;
+      height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--violet), var(--cyan));
+      z-index: 10;
+    }
+    /* Scroll hint */
+    .frame-scroll-hint {
+      position: absolute; bottom: 3.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .4rem;
+      color: rgba(255,255,255,0.28); font-size: 0.7rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      pointer-events: none;
+      animation: bounceScroll 1.6s ease infinite;
+      z-index: 10;
+    }
+    .frame-scroll-hint svg { width: 16px; height: 16px; }
+    /* Skip button */
+    #skip-frames {
+      position: absolute; bottom: 2.5rem; right: 2.5rem;
+      background: rgba(4,4,4,0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      color: var(--muted); font-family: 'Inter', sans-serif;
+      font-size: 0.8rem; cursor: none; letter-spacing: 0.06em;
+      padding: .5rem 1.25rem; border-radius: 4px;
+      transition: color .2s, border-color .2s;
+      z-index: 10;
+    }
+    #skip-frames:hover { color: var(--text); border-color: var(--muted); }
+
+    /* ─── NAVBAR ───────────────────────────────────────────────── */
+    #navbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 4rem;
+      transform: translateY(-100%);
+      transition: background .3s, backdrop-filter .3s, box-shadow .3s;
+    }
+    #navbar.scrolled {
+      background: rgba(4,4,4,0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    .nav-logo {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800; font-size: 1.5rem;
+      color: var(--violet);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-links {
+      display: flex; gap: 2.5rem; list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-family: 'Inter', sans-serif; font-size: 0.875rem;
+      font-weight: 500; letter-spacing: 0.04em;
+      position: relative; transition: color .2s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute;
+      bottom: -4px; left: 0; right: 0; height: 2px;
+      background: var(--violet);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .25s ease;
+      border-radius: 1px;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); }
+    .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
+
+    /* Hamburger */
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: none; padding: .5rem;
+    }
+    .nav-hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--text);
+      border-radius: 1px;
+      transition: transform .3s, opacity .3s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile overlay */
+    #nav-overlay {
+      position: fixed; inset: 0;
+      background: rgba(4,4,4,0.97);
+      backdrop-filter: blur(24px);
+      z-index: 999;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 2.5rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+    }
+    #nav-overlay.open { opacity: 1; pointer-events: all; }
+    #nav-overlay a {
+      color: var(--text); text-decoration: none;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700; font-size: 2.5rem;
+      transition: color .2s;
+    }
+    #nav-overlay a:hover { color: var(--violet); }
+
+    @media (max-width: 768px) {
+      #navbar { padding: 1.25rem 1.5rem; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+
+    /* ─── MACBOOK SECTION ──────────────────────────────────────── */
+    #macbook-section {
+      position: relative;
+      height: 300vh;
+      background: var(--bg);
+    }
+    #macbook-sticky {
+      position: sticky; top: 0;
+      height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .macbook-spline-container {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .macbook-placeholder {
+      text-align: center;
+      color: var(--muted);
+      font-family: 'Manrope', sans-serif;
+    }
+    .macbook-placeholder h2 {
+      font-size: 2rem; font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .macbook-placeholder p { font-size: 0.9rem; }
+    #macbook-spline {
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+
+    /* ─── HERO SECTION ─────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 100vh;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    #hero spline-viewer {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: all;   /* coin is fully interactive */
+      z-index: 0;
+    }
+    /* Watermark removal */
+    spline-viewer::part(logo) { display: none !important; }
+    /* Buttons sit below the Spline text at bottom 8% */
+    .hero-buttons {
+      position: absolute;
+      bottom: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 16px;
+      z-index: 10;
+      pointer-events: all;
+    }
+    .btn-primary {
+      padding: .75rem 2rem;
+      background: var(--violet);
+      color: #fff;
+      border: none; border-radius: 6px;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      font-size: .9rem; letter-spacing: 0.03em;
+      text-decoration: none; display: inline-block;
+      transition: background .2s, transform .2s, box-shadow .2s;
+      cursor: none;
+    }
+    .btn-primary:hover {
+      background: #9850ff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(123,47,255,0.4);
+    }
+    .btn-ghost {
+      padding: .75rem 2rem;
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      font-size: .9rem; letter-spacing: 0.03em;
+      text-decoration: none; display: inline-block;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+      cursor: none;
+    }
+    .btn-ghost:hover {
+      border-color: var(--violet);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(123,47,255,0.15);
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute; bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+      gap: .5rem; color: var(--muted);
+      font-size: 0.75rem; letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: bounceScroll 2s ease infinite;
+    }
+    .scroll-indicator svg { width: 20px; height: 20px; }
+    @keyframes bounceScroll {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ─── SECTION SHARED ───────────────────────────────────────── */
+    section { padding: 7rem 4rem; }
+    @media (max-width: 768px) { section { padding: 5rem 1.5rem; } }
+
+    .section-label {
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--violet); margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Manrope', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    /* ─── ABOUT SECTION ────────────────────────────────────────── */
+    #about { overflow: hidden; }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: start;
+      max-width: 1200px; margin: 0 auto;
+    }
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    }
+    .about-headline {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+    .about-headline .hl { color: var(--violet); }
+    .about-bio {
+      font-size: 1rem; line-height: 1.85;
+      color: rgba(255,255,255,0.75);
+    }
+    .about-bio p + p { margin-top: 1.25rem; }
+    .about-bio .sign {
+      color: var(--muted); font-style: italic;
+      margin-top: 1.5rem; display: block;
+    }
+    .about-stats {
+      display: flex; gap: 3rem; margin-top: 3rem; flex-wrap: wrap;
+    }
+    .stat-item { text-align: left; }
+    .stat-number {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800; font-size: 2.5rem;
+      color: var(--violet);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.8rem; color: var(--muted);
+      margin-top: .25rem; letter-spacing: 0.05em;
+    }
+
+    /* ─── SKILLS SECTION ───────────────────────────────────────── */
+    #skills { background: var(--bg); }
+    .skills-header { text-align: center; margin-bottom: 4rem; }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1200px; margin: 0 auto;
+    }
+    @media (max-width: 1000px) { .skills-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 600px)  { .skills-grid { grid-template-columns: 1fr; } }
+
+    .skill-card {
+      position: relative;
+      background: var(--card-bg);
+      border-top:    2px solid rgba(123, 47, 255, 0.5);
+      border-left:   1px solid #1a1a1a;
+      border-right:  1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+      border-radius: 16px;
+      padding: 2rem;
+      min-height: 140px;
+      overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-between;
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+      cursor: default;
+    }
+    /* Gradient border glow on hover */
+    .skill-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      opacity: 0; transition: opacity .3s;
+    }
+    .skill-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 40px rgba(123,47,255,0.15), 0 20px 60px rgba(123,47,255,0.12);
+    }
+    .skill-card:hover::before { opacity: 1; }
+    .skill-card-bg {
+      position: absolute; inset: 0; border-radius: inherit;
+      background: radial-gradient(ellipse at top left, rgba(123,47,255,0.08), transparent 60%);
+      opacity: 0; transition: opacity .3s;
+    }
+    .skill-card:hover .skill-card-bg { opacity: 1; }
+
+    /* Number badge — top-right, faint violet */
+    .skill-card-num {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800; font-size: 1.1rem;
+      color: var(--violet); opacity: 0.3;
+      letter-spacing: -0.02em; pointer-events: none;
+      transition: opacity .3s;
+    }
+    .skill-card:hover .skill-card-num { opacity: 0.6; }
+
+    .skill-name {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800; font-size: 1.35rem;
+      margin-bottom: .5rem;
+    }
+    /* Description — hidden by default, cyan italic on hover */
+    .skill-desc {
+      font-size: 0.825rem; color: #00F5FF;
+      font-style: italic;
+      opacity: 0; transition: opacity .25s .08s, transform .25s .08s;
+      transform: translateY(4px);
+      margin-bottom: .75rem;
+    }
+    .skill-card:hover .skill-desc { opacity: 1; transform: translateY(0); }
+
+    .skill-pills {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      margin-bottom: .25rem;
+    }
+    /* Skill pills: styled specifically, hidden until hover */
+    .skill-pills .pill {
+      padding: .25rem .75rem;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 20px;
+      font-size: 0.75rem; color: var(--violet);
+      font-weight: 500;
+      opacity: 0; transform: translateY(6px);
+      transition: opacity .25s, transform .25s, background .2s, border-color .2s, color .2s;
+    }
+    .skill-card:hover .skill-pills .pill { opacity: 1; transform: translateY(0); }
+    .skill-card:hover .skill-pills .pill:hover {
+      background: var(--violet-dim); border-color: var(--violet); color: #fff;
+    }
+
+    /* "Hover to explore →" — visible by default, hidden on hover */
+    .skill-hover-hint {
+      margin-top: auto;
+      padding-top: .75rem;
+      font-size: 12px; color: var(--muted);
+      opacity: 0.4; letter-spacing: 0.04em;
+      transition: opacity .25s;
+    }
+    .skill-card:hover .skill-hover-hint { opacity: 0; }
+
+    /* 7th card centred in 3-col grid */
+    .skill-card:last-child { grid-column: 2; }
+    @media (max-width: 1000px) { .skill-card:last-child { grid-column: auto; } }
+
+    /* ─── PROJECTS SECTION ─────────────────────────────────────── */
+    #projects { overflow: hidden; }
+    .projects-header { text-align: center; margin-bottom: 4rem; }
+
+    .carousel-container {
+      position: relative;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .carousel-track-wrap {
+      overflow: hidden;
+      padding: 2rem 0 3rem;
+    }
+    .carousel-track {
+      display: flex; gap: 2rem;
+      transition: transform .5s cubic-bezier(.25,.46,.45,.94);
+      will-change: transform;
+    }
+    .project-card {
+      flex: 0 0 360px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative; overflow: hidden;
+      transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+      cursor: default;
+    }
+    /* Gradient border glow on hover (same technique as skill cards) */
+    .project-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
+    }
+    /* Inner tint overlay */
+    .project-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(160deg, rgba(123,47,255,0.07), rgba(0,245,255,0.03));
+      opacity: 0; transition: opacity .3s;
+      pointer-events: none;
+    }
+    .project-card:hover {
+      transform: scale(1.03);
+      box-shadow:
+        0 0 0 1px transparent,
+        0 20px 60px rgba(123,47,255,0.22),
+        0 4px 20px rgba(0,245,255,0.08);
+    }
+    .project-card:hover::before { opacity: 1; }
+    .project-card:hover::after  { opacity: 1; }
+
+    .project-num {
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--violet); margin-bottom: .75rem;
+    }
+    .project-name {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800; font-size: 1.5rem;
+      line-height: 1.2; margin-bottom: 1rem;
+    }
+    .project-problem {
+      font-size: 0.875rem; color: rgba(255,255,255,0.6);
+      line-height: 1.65; margin-bottom: 1.5rem;
+    }
+    .project-tools {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      margin-bottom: 1.75rem;
+    }
+    .project-card .pill {
+      opacity: 1; transform: none;
+      background: rgba(123,47,255,0.08);
+      border-color: rgba(123,47,255,0.2);
+      color: rgba(255,255,255,0.7);
+    }
+    .btn-project-view {
+      display: inline-block;
+      padding: .6rem 1.5rem;
+      border: 1.5px solid var(--violet);
+      border-radius: 6px;
+      color: var(--violet);
+      font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      transition: background .2s, color .2s;
+      cursor: none;
+    }
+    .btn-project-view:hover {
+      background: var(--violet); color: #fff;
+    }
+
+    /* Carousel nav */
+    .carousel-nav {
+      display: flex; justify-content: center; gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .carousel-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: none; transition: border-color .2s, background .2s;
+    }
+    .carousel-btn:hover { border-color: var(--violet); background: var(--violet-dim); }
+    .carousel-dots {
+      display: flex; gap: .5rem; align-items: center;
+    }
+    .carousel-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border);
+      cursor: none; transition: background .2s, transform .2s;
+    }
+    .carousel-dot.active { background: var(--violet); transform: scale(1.4); }
+
+    /* ─── CREATIVE WORK ────────────────────────────────────────── */
+    #creative { background: var(--bg); }
+    .creative-header { text-align: center; margin-bottom: 3rem; }
+    .creative-tabs {
+      display: flex; justify-content: center; gap: 1rem;
+      margin-bottom: 3rem; flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: .6rem 1.75rem;
+      border-radius: 100px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'Inter', sans-serif; font-size: 0.875rem; font-weight: 500;
+      cursor: none; transition: all .2s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      border-color: var(--violet);
+      color: var(--text);
+      background: var(--violet-dim);
+    }
+    .creative-panels {
+      max-width: 1200px; margin: 0 auto;
+      position: relative;
+    }
+    .creative-panel {
+      display: none;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .creative-panel.active { display: grid; }
+    @media (max-width: 768px) { .creative-panel { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 500px) { .creative-panel { grid-template-columns: 1fr; } }
+    .creative-card {
+      aspect-ratio: 16/10;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: .75rem;
+      position: relative; overflow: hidden;
+      transition: border-color .2s, transform .2s;
+    }
+    .creative-card:hover { border-color: var(--border); transform: scale(1.01); }
+    .play-icon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(123,47,255,0.15);
+      border: 1.5px solid var(--violet);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .creative-card:hover .play-icon { background: var(--violet-dim); }
+    .play-icon svg { width: 18px; height: 18px; fill: var(--violet); margin-left: 3px; }
+    .creative-card-label {
+      font-size: 0.8rem; color: var(--muted);
+      font-style: italic; text-align: center; padding: 0 1rem;
+    }
+
+    /* ─── CONTACT SECTION ──────────────────────────────────────── */
+    #contact {
+      text-align: center;
+      max-width: 800px; margin: 0 auto;
+      padding: 7rem 4rem;
+    }
+    @media (max-width: 768px) { #contact { padding: 5rem 1.5rem; } }
+    .contact-section { padding: 0; }
+
+    .contact-sub {
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: rgba(255,255,255,0.6);
+      margin: 1.25rem 0 3rem;
+      line-height: 1.6;
+    }
+    .social-row {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+    .social-link {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .75rem 1.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem; font-weight: 500;
+      transition: border-color .2s, color .2s, transform .2s, box-shadow .2s;
+      cursor: none;
+    }
+    .social-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .social-link:hover {
+      border-color: var(--violet);
+      color: var(--text);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(123,47,255,0.15);
+    }
+    .social-link.greyed { opacity: 0.35; pointer-events: none; }
+    .contact-cta-row { margin-bottom: 5rem; }
+
+    /* ─── FOOTER ───────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 4rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    @media (max-width: 768px) { footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; } }
+    .footer-copy {
+      font-size: 0.825rem; color: var(--muted);
+      font-family: 'Manrope', sans-serif;
+    }
+    .footer-copy span { color: var(--violet); font-weight: 600; }
+    .footer-tagline {
+      font-size: 0.75rem; color: rgba(136,136,136,0.5);
+      font-style: italic;
+    }
+
+    /* ─── GRADIENT DIVIDER ─────────────────────────────────────── */
+    .grad-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--violet), var(--cyan), transparent);
+      opacity: 0.25;
+      margin: 0 4rem;
+    }
+    @media (max-width: 768px) { .grad-divider { margin: 0 1.5rem; } }
+
+    /* ─── NOISE OVERLAY ────────────────────────────────────────── */
+    .noise-overlay {
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none; z-index: 9997;
+    }
+
+    /* ─── SCROLL REVEAL ────────────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(30px); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    /* ─── GLOW BACKGROUND BLOBS ────────────────────────────────── */
+    .bg-blob {
+      position: absolute; border-radius: 50%;
+      pointer-events: none; filter: blur(120px);
+      animation: blobFloat 8s ease-in-out infinite alternate;
+    }
+    @keyframes blobFloat {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(20px, -20px) scale(1.05); }
+    }
+
+    /* ─── SKILL PILL STAGGER (scoped to skill-pills) ──────────── */
+    .skill-card:hover .skill-pills .pill:nth-child(1) { transition-delay: .00s; }
+    .skill-card:hover .skill-pills .pill:nth-child(2) { transition-delay: .05s; }
+    .skill-card:hover .skill-pills .pill:nth-child(3) { transition-delay: .10s; }
+    .skill-card:hover .skill-pills .pill:nth-child(4) { transition-delay: .15s; }
+    .skill-card:hover .skill-pills .pill:nth-child(5) { transition-delay: .20s; }
+    .skill-card:hover .skill-pills .pill:nth-child(6) { transition-delay: .25s; }
+    .skill-card:hover .skill-pills .pill:nth-child(7) { transition-delay: .30s; }
+
+    /* Pill transition shared */
+    .pill { transition: opacity .25s, transform .25s, background .2s, color .2s, border-color .2s; }
+
+    /* ─── ABOUT SECTION LABEL ──────────────────────────────────── */
+    #about .section-label { margin-bottom: 3rem; text-align: center; }
+
+    /* ─── PROJECTS SECTION MAX-WIDTH ───────────────────────────── */
+    #projects > .projects-header { max-width: 1200px; margin-left: auto; margin-right: auto; }
+
+    /* ─── SECTION PADDING FIX ──────────────────────────────────── */
+    #hero { padding: 0; }
+    #macbook-section { padding: 0; }
+  </style>
+</head>
+
+<body>
+  <!-- Noise -->
+  <div class="noise-overlay"></div>
+
+  <!-- Cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- ── FRAME LOADER ──────────────────────────────────────────────── -->
+  <div id="frame-loader">
+    <span class="loader-logo">SV</span>
+    <span class="loader-label">Loading Experience...</span>
+    <div class="loader-bar-wrap">
+      <div class="loader-bar-fill" id="loader-bar-fill"></div>
+    </div>
+    <span class="loader-percent" id="loader-percent">0%</span>
+  </div>
+
+  <!-- ── FRAME SCROLL SECTION ───────────────────────────────────────── -->
+  <div id="frame-scroll-section">
+    <div id="frame-sticky">
+      <canvas id="frame-canvas"></canvas>
+      <div id="frame-fadeout"></div>
+      <div id="frame-progress-bar"></div>
+      <div class="frame-scroll-hint" id="frame-scroll-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        Scroll to explore
+      </div>
+      <button id="skip-frames">skip intro →</button>
+    </div>
+  </div>
+
+  <!-- Mobile Nav Overlay -->
+  <div id="nav-overlay">
+    <a href="#hero"     onclick="closeNav()">Home</a>
+    <a href="#about"    onclick="closeNav()">About</a>
+    <a href="#skills"   onclick="closeNav()">Skills</a>
+    <a href="#projects" onclick="closeNav()">Projects</a>
+    <a href="#contact"  onclick="closeNav()">Contact</a>
+  </div>
+
+  <!-- ── NAVBAR ─────────────────────────────────────────────────── -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">SV</a>
+    <ul class="nav-links">
+      <li><a href="#hero"     class="nav-link active">Home</a></li>
+      <li><a href="#about"    class="nav-link">About</a></li>
+      <li><a href="#skills"   class="nav-link">Skills</a></li>
+      <li><a href="#projects" class="nav-link">Projects</a></li>
+      <li><a href="#contact"  class="nav-link">Contact</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ── MACBOOK SCROLL SECTION ─────────────────────────────────── -->
+  <div id="macbook-section">
+    <div id="macbook-sticky">
+      <div class="macbook-spline-container">
+        <!-- TODO: Replace MACBOOK_SPLINE_URL_PLACEHOLDER with your MacBook Spline scene URL -->
+        <spline-viewer
+          id="macbook-spline"
+          url="MACBOOK_SPLINE_URL_PLACEHOLDER"
+          loading="lazy"
+          style="width:100%; height:100%; pointer-events:none;"
+        ></spline-viewer>
+        <div class="macbook-placeholder" id="macbook-placeholder">
+          <h2>MacBook Scene</h2>
+          <p>Replace <code>MACBOOK_SPLINE_URL_PLACEHOLDER</code> in the HTML with your Spline MacBook scene URL</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HERO ──────────────────────────────────────────────────────── -->
+  <section id="hero">
+    <!-- Spline Prism Coin — production scene URL -->
+    <spline-viewer
+      url="https://prod.spline.design/kWnit8d9vAYy9SBc/scene.splinecode"
+      loading="lazy"
+      style="width:100%; height:100%; position:absolute; top:0; left:0;"
+    ></spline-viewer>
+
+    <div class="hero-buttons" id="hero-btns">
+      <a href="#projects" class="btn-primary">View My Work</a>
+      <a href="#contact"  class="btn-ghost">Contact Me</a>
+    </div>
+
+    <div class="scroll-indicator" id="scroll-ind">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ── ABOUT ─────────────────────────────────────────────────────── -->
+  <section id="about">
+    <div class="section-label">About Me</div>
+    <div class="about-grid">
+      <!-- Left -->
+      <div class="about-left" id="about-left">
+        <h2 class="about-headline">
+          I build products that <span class="hl">think</span>,<br/>
+          look good, and actually <span class="hl">work</span>.
+        </h2>
+        <div class="about-stats">
+          <div class="stat-item">
+            <div class="stat-number" data-target="7">0</div>
+            <div class="stat-label">Projects Shipped</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="3">0</div>
+            <div class="stat-label">Years Learning</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="5">0</div>
+            <div class="stat-label">Skill Domains</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="about-right" id="about-right">
+        <div class="about-bio">
+          <p>I'm Sai Vaibhav — a Full-Stack Developer and Creative Designer based in Hyderabad. I don't just build things that work, I build things that <em>feel right</em>. My work lives at the intersection of clean code, intentional design, and genuine curiosity about what technology can do next.</p>
+          <p>I've shipped AI tools, designed interfaces, animated stories, and edited frames — because I believe the best products are built by people who refuse to stop at one skill. Every project I take on starts with a real problem and ends with something I'm proud to put my name on.</p>
+          <p>Still learning. Always building.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grad-divider"></div>
+
+  <!-- ── SKILLS ─────────────────────────────────────────────────────── -->
+  <section id="skills">
+    <div class="skills-header">
+      <div class="section-label">Capabilities</div>
+      <h2 class="section-title">What I Bring</h2>
+    </div>
+
+    <div class="skills-grid" id="skills-grid">
+
+      <div class="skill-card">
+        <div class="skill-card-bg"></div>
+        <span class="skill-card-num">01</span>
+        <div class="skill-name">Frontend Dev</div>
+        <div class="skill-desc">Interfaces that feel alive</div>
+        <div class="skill-pills">
+          <span class="pill">React</span>
+          <span class="pill">Next.js</span>
+          <span class="pill">Tailwind</span>
+          <span class="pill">GSAP</span>
+          <span class="pill">Three.js</span>
+          <span class="pill">HTML/CSS</span>
+        </div>
+        <div class="skill-hover-hint">Hover to explore →</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-bg"></div>
+        <span class="skill-card-num">02</span>
+        <div class="skill-name">Backend Dev</div>
+        <div class="skill-desc">Systems that scale</div>
+        <div class="skill-pills">
+          <span class="pill">Node.js</span>
+          <span class="pill">Express</span>
+          <span class="pill">REST APIs</span>
+          <span class="pill">PostgreSQL</span>
+          <span class="pill">MongoDB</span>
+        </div>
+        <div class="skill-hover-hint">Hover to explore →</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-bg"></div>
+        <span class="skill-card-num">03</span>
+        <div class="skill-name">Java &amp; Python</div>
+        <div class="skill-desc">Logic that powers everything</div>
+        <div class="skill-pills">
+          <span class="pill">Java</span>
+          <span class="pill">Spring Boot</span>
+          <span class="pill">Python</span>
+          <span class="pill">Automation</span>
+          <span class="pill">AI Integrations</span>
+        </div>
+        <div class="skill-hover-hint">Hover to explore →</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-bg"></div>
+        <span class="skill-card-num">04</span>
+        <div class="skill-name">UI/UX Design</div>
+        <div class="skill-desc">Design with purpose</div>
+        <div class="skill-pills">
+          <span class="pill">Figma</span>
+          <span class="pill">FigJam</span>
+          <span class="pill">Framer</span>
+          <span class="pill">Wireframing</span>
+          <span class="pill">Design Systems</span>
+        </div>
+        <div class="skill-hover-hint">Hover to explore →</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-bg"></div>
+        <span class="skill-card-num">05</span>
+        <div class="skill-name">Motion Graphics</div>
+        <div class="skill-desc">Motion that tells stories</div>
+        <div class="skill-pills">
+          <span class="pill">After Effects</span>
+          <span class="pill">Lottie</span>
+          <span class="pill">Spline</span>
+          <span class="pill">CSS Animation</span>
+        </div>
+        <div class="skill-hover-hint">Hover to explore →</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-bg"></div>
+        <span class="skill-card-num">06</span>
+        <div class="skill-name">Video Editing</div>
+        <div class="skill-desc">Stories worth watching</div>
+        <div class="skill-pills">
+          <span class="pill">Premiere Pro</span>
+          <span class="pill">DaVinci Resolve</span>
+          <span class="pill">After Effects</span>
+        </div>
+        <div class="skill-hover-hint">Hover to explore →</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-bg"></div>
+        <span class="skill-card-num">07</span>
+        <div class="skill-name">3D &amp; Creative</div>
+        <div class="skill-desc">Depth in every dimension</div>
+        <div class="skill-pills">
+          <span class="pill">Blender</span>
+          <span class="pill">Spline</span>
+          <span class="pill">3D Modelling</span>
+        </div>
+        <div class="skill-hover-hint">Hover to explore →</div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="grad-divider"></div>
+
+  <!-- ── PROJECTS ────────────────────────────────────────────────────── -->
+  <section id="projects">
+    <div class="projects-header">
+      <div class="section-label">Work</div>
+      <h2 class="section-title">Things I've Built</h2>
+    </div>
+
+    <div class="carousel-container">
+      <div class="carousel-track-wrap" id="carousel-wrap">
+        <div class="carousel-track" id="carousel-track">
+
+          <div class="project-card">
+            <div class="project-num">01</div>
+            <h3 class="project-name">Geopolitical Signal Engine</h3>
+            <p class="project-problem">Stock traders miss how global events silently move prices — this engine surfaces those signals before they hit the market.</p>
+            <div class="project-tools">
+              <span class="pill">Python</span>
+              <span class="pill">News APIs</span>
+              <span class="pill">NLP</span>
+              <span class="pill">Financial APIs</span>
+            </div>
+            <a href="#" class="btn-project-view">View Project</a>
+          </div>
+
+          <div class="project-card">
+            <div class="project-num">02</div>
+            <h3 class="project-name">Jarvis — Autonomous AI</h3>
+            <p class="project-problem">Repetitive laptop tasks eat productive time. Jarvis handles them so you don't have to.</p>
+            <div class="project-tools">
+              <span class="pill">Python</span>
+              <span class="pill">LLM APIs</span>
+              <span class="pill">OS Automation</span>
+              <span class="pill">Speech Recognition</span>
+            </div>
+            <a href="#" class="btn-project-view">View Project</a>
+          </div>
+
+          <div class="project-card">
+            <div class="project-num">03</div>
+            <h3 class="project-name">LoanBook</h3>
+            <p class="project-problem">Informal lenders lose track of interest and borrowers. LoanBook brings structure to unstructured lending.</p>
+            <div class="project-tools">
+              <span class="pill">React</span>
+              <span class="pill">Node.js</span>
+              <span class="pill">MongoDB</span>
+              <span class="pill">Push Notifications</span>
+            </div>
+            <a href="#" class="btn-project-view">View Project</a>
+          </div>
+
+          <div class="project-card">
+            <div class="project-num">04</div>
+            <h3 class="project-name">ResumeAI</h3>
+            <p class="project-problem">Job hunting means endlessly tailoring resumes. ResumeAI does it in seconds, for every role.</p>
+            <div class="project-tools">
+              <span class="pill">Python</span>
+              <span class="pill">Gemini API</span>
+              <span class="pill">LinkedIn Scraper</span>
+              <span class="pill">PDF Generation</span>
+            </div>
+            <a href="#" class="btn-project-view">View Project</a>
+          </div>
+
+          <div class="project-card">
+            <div class="project-num">05</div>
+            <h3 class="project-name">MangaFlow</h3>
+            <p class="project-problem">Translating manga panels manually is painfully slow. MangaFlow automates the pipeline.</p>
+            <div class="project-tools">
+              <span class="pill">OCR</span>
+              <span class="pill">Translation APIs</span>
+              <span class="pill">Python</span>
+              <span class="pill">Image Processing</span>
+            </div>
+            <a href="#" class="btn-project-view">View Project</a>
+          </div>
+
+          <div class="project-card">
+            <div class="project-num">06</div>
+            <h3 class="project-name">Website Builder</h3>
+            <p class="project-problem">Building websites still requires hours even with AI. This changes that.</p>
+            <div class="project-tools">
+              <span class="pill">Claude API</span>
+              <span class="pill">Image Gen AI</span>
+              <span class="pill">React</span>
+              <span class="pill">Code Generation</span>
+            </div>
+            <a href="#" class="btn-project-view">View Project</a>
+          </div>
+
+          <div class="project-card">
+            <div class="project-num">07</div>
+            <h3 class="project-name">Triad — AI Gateway</h3>
+            <p class="project-problem">Choosing between AI models creates friction. Triad unifies them behind a single interface.</p>
+            <div class="project-tools">
+              <span class="pill">OpenAI API</span>
+              <span class="pill">Anthropic API</span>
+              <span class="pill">Gemini API</span>
+              <span class="pill">React</span>
+            </div>
+            <a href="#" class="btn-project-view">View Project</a>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="carousel-nav">
+        <button class="carousel-btn" id="prev-btn" aria-label="Previous">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="carousel-dots" id="carousel-dots"></div>
+        <button class="carousel-btn" id="next-btn" aria-label="Next">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="grad-divider"></div>
+
+  <!-- ── CREATIVE WORK ───────────────────────────────────────────────── -->
+  <section id="creative">
+    <div class="creative-header">
+      <div class="section-label">Creative</div>
+      <h2 class="section-title">Beyond Code</h2>
+    </div>
+
+    <div class="creative-tabs">
+      <button class="tab-btn active" data-tab="motion">Motion Graphics</button>
+      <button class="tab-btn" data-tab="video">Video Editing</button>
+      <button class="tab-btn" data-tab="threed">3D Work</button>
+    </div>
+
+    <div class="creative-panels">
+      <div class="creative-panel active" id="tab-motion">
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
+      </div>
+
+      <div class="creative-panel" id="tab-video">
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
+      </div>
+
+      <div class="creative-panel" id="tab-threed">
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grad-divider"></div>
+
+  <!-- ── CONTACT ─────────────────────────────────────────────────────── -->
+  <div id="contact" class="contact-section">
+    <div class="section-label" style="display:block; text-align:center; margin-bottom:1rem;">Get In Touch</div>
+    <h2 class="section-title" style="text-align:center; max-width:600px; margin:0 auto 1.25rem;">Let's Build Something</h2>
+    <p class="contact-sub">Got a project in mind? Let's talk.</p>
+
+    <div class="social-row">
+      <!-- GitHub -->
+      <a href="https://github.com/SavageKing001" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        GitHub
+      </a>
+      <!-- LinkedIn -->
+      <a href="https://www.linkedin.com/in/sai-vaibhav-g-5269782b4" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <!-- X / Twitter -->
+      <a href="https://x.com/saivaibhav005" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X / Twitter
+      </a>
+      <!-- Email -->
+      <a href="mailto:vaibhavreddy0009@gmail.com" class="social-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+        Email
+      </a>
+      <!-- Discord -->
+      <a href="https://discord.com/users/1227177398395732010" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+        Discord
+      </a>
+      <!-- Upwork (coming soon) -->
+      <span class="social-link greyed">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.561 13.158c-1.102 0-2.135-.467-3.074-1.227l.228-1.076.008-.042c.207-1.143.849-3.06 2.839-3.06 1.492 0 2.703 1.212 2.703 2.703-.001 1.489-1.212 2.702-2.704 2.702zm0-8.266c-2.515 0-4.233 1.527-4.934 3.898-.715-1.064-1.256-2.312-1.572-3.29H9.777v5.207c-.001 1.489-1.213 2.702-2.704 2.702s-2.704-1.213-2.704-2.702V5.5h-2.27v5.207c0 2.762 2.244 5.006 5.005 5.006 2.762 0 5.005-2.244 5.005-5.006v-.873c.311.688.694 1.373 1.146 1.99l-1.638 7.697h2.33l1.017-4.815c.984.653 2.088 1.061 3.351 1.061 2.762 0 5.005-2.245 5.005-5.007-.001-2.762-2.244-5.007-5.006-5.007z"/></svg>
+        Upwork — Coming Soon
+      </span>
+    </div>
+
+    <div class="contact-cta-row">
+      <a href="mailto:vaibhavreddy0009@gmail.com" class="btn-primary" style="font-size:1rem; padding:1rem 2.5rem;">
+        Send Me a Message
+      </a>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-copy">Built by <span>Sai Vaibhav</span> © 2026</div>
+    <div class="footer-tagline">Designed & Developed with intention.</div>
+  </footer>
+
+  <!-- ────────────────────────────────────────────────────────────────── -->
+  <script>
+    /* ── FORCE SCROLL TO TOP ON EVERY LOAD ─────────────────────────── */
+    window.scrollTo(0, 0);
+    history.scrollRestoration = 'manual';
+
+    /* ── REGISTER GSAP PLUGINS ─────────────────────────────────────── */
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+    /* ── CURSOR ────────────────────────────────────────────────────── */
+    const dot  = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mx = -100, my = -100, rx = -100, ry = -100;
+
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    (function animCursor() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      dot.style.left  = mx + 'px';
+      dot.style.top   = my + 'px';
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(animCursor);
+    })();
+
+    document.querySelectorAll('a, button, .skill-card, .project-card, .tab-btn, .carousel-btn')
+      .forEach(el => {
+        el.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
+      });
+
+    /* ── FRAME PRELOAD & CANVAS SCRUB ──────────────────────────────── */
+    const TOTAL_FRAMES  = 151;
+    const frameImgs     = new Array(TOTAL_FRAMES);
+    let   loadedCount   = 0;
+    let   allLoaded     = false;
+    let   currentFrame  = 0;
+
+    const canvas        = document.getElementById('frame-canvas');
+    const ctx           = canvas.getContext('2d');
+    const loaderEl      = document.getElementById('frame-loader');
+    const barFill       = document.getElementById('loader-bar-fill');
+    const percentEl     = document.getElementById('loader-percent');
+    const frameProgBar  = document.getElementById('frame-progress-bar');
+    const fadeoutEl     = document.getElementById('frame-fadeout');
+    const scrollHintEl  = document.getElementById('frame-scroll-hint');
+    const skipFramesBtn = document.getElementById('skip-frames');
+    const frameSection  = document.getElementById('frame-scroll-section');
+
+    /* Size canvas to viewport and immediately paint dark background */
+    function resizeCanvas() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      ctx.fillStyle = '#040404';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (allLoaded) drawFrame(currentFrame);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas(); /* paints #040404 immediately — no white flash */
+
+    /* Object-cover draw */
+    function drawFrame(idx) {
+      const img = frameImgs[idx];
+      if (!img || !img.complete || !img.naturalWidth) return;
+      ctx.fillStyle = '#040404';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const scale = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      const w = img.naturalWidth  * scale;
+      const h = img.naturalHeight * scale;
+      ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+    }
+
+    let errorCount = 0;
+
+    /* Per-frame load callback */
+    function onFrameLoad(i, isError) {
+      loadedCount++;
+      if (isError) errorCount++;
+      const pct = loadedCount / TOTAL_FRAMES;
+      barFill.style.width   = (pct * 100) + '%';
+      percentEl.textContent = Math.round(pct * 100) + '%';
+      /* Draw first frame as soon as it arrives */
+      if (i === 0 && !isError) {
+        console.log('Frame 1 loaded:', frameImgs[0].src,
+                    '| complete:', frameImgs[0].complete,
+                    '| size:', frameImgs[0].naturalWidth + 'x' + frameImgs[0].naturalHeight);
+        drawFrame(0);
+      }
+      if (loadedCount === TOTAL_FRAMES) onAllLoaded();
+    }
+
+    /* All frames ready (or all errored) */
+    function onAllLoaded() {
+      allLoaded = true;
+      console.log(`Frames loaded: ${TOTAL_FRAMES - errorCount}/${TOTAL_FRAMES}, errors: ${errorCount}`);
+
+      if (errorCount === TOTAL_FRAMES) {
+        /* Every frame failed — show fallback message and skip straight to hero */
+        console.warn('All frames failed to load. Check that the folder ezgif-38629d7b547c2093-jpg/ sits next to index.html and contains ezgif-frame-001.jpg … ezgif-frame-151.jpg');
+        ctx.fillStyle = '#040404';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'rgba(136,136,136,0.5)';
+        ctx.font = '14px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Frame sequence unavailable — scroll to continue', canvas.width / 2, canvas.height / 2);
+        /* Dismiss loader and scroll to hero automatically after 1.5s */
+        gsap.to(loaderEl, { opacity: 0, duration: 0.4, delay: 0.2,
+          onComplete: () => {
+            loaderEl.style.display = 'none';
+            gsap.to('#navbar', { y: 0, duration: 0.5, ease: 'power3.out' });
+            gsap.to(window, { scrollTo: '#hero', duration: 1, ease: 'power2.inOut', delay: 1.5 });
+          }
+        });
+        return;
+      }
+
+      drawFrame(0);
+      gsap.to(loaderEl, {
+        opacity: 0, duration: 0.5, delay: 0.3, ease: 'power2.inOut',
+        onComplete: () => { loaderEl.style.display = 'none'; }
+      });
+      initScrollScrub();
+    }
+
+    /* Frame path helper — subfolder + 3-digit padding */
+    function getFramePath(n) {
+      const pad = String(n).padStart(3, '0');
+      return `./ezgif-38629d7b547c2093-jpg/ezgif-frame-${pad}.jpg`;
+    }
+
+    /* Verify paths in console */
+    console.log('Testing frame 1:  ', getFramePath(1));
+    console.log('Testing frame 151:', getFramePath(151));
+
+    /* Kick off preload */
+    for (let i = 0; i < TOTAL_FRAMES; i++) {
+      const img = new Image();
+      img.src   = getFramePath(i + 1);
+      img.onload  = () => onFrameLoad(i, false);
+      img.onerror = () => onFrameLoad(i, true);
+      frameImgs[i] = img;
+    }
+
+    /* ScrollTrigger scrub — runs after all frames loaded */
+    function initScrollScrub() {
+      /* Navbar hide during frames → reveal and auto-scroll to hero on exit */
+      ScrollTrigger.create({
+        trigger: frameSection,
+        start: 'top top',
+        end: 'bottom bottom',
+        onLeave: () => {
+          gsap.to('#navbar', { y: 0, duration: 0.6, ease: 'power3.out' });
+          /* Smooth auto-scroll into hero after last frame */
+          gsap.to(window, {
+            scrollTo: { y: '#hero', offsetY: 0 },
+            duration: 1.2, ease: 'power2.inOut', delay: 0.15
+          });
+        },
+        onEnterBack: () => gsap.to('#navbar', { y: '-100%', duration: 0.4 })
+      });
+
+      /* Fade out scroll hint after first tiny movement */
+      ScrollTrigger.create({
+        trigger: frameSection,
+        start: 'top+=120 top',
+        once: true,
+        onEnter: () => gsap.to(scrollHintEl, { opacity: 0, duration: 0.5 })
+      });
+
+      /* Main frame scrub */
+      ScrollTrigger.create({
+        trigger: frameSection,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1,
+        onUpdate: self => {
+          /* Frame index: clamp to 0–150, reverse automatically on scroll-up */
+          const idx = Math.min(Math.floor(self.progress * TOTAL_FRAMES), TOTAL_FRAMES - 1);
+          if (idx !== currentFrame) {
+            currentFrame = idx;
+            drawFrame(idx);
+          }
+          frameProgBar.style.width = (self.progress * 100) + '%';
+          /* Fade to black over last 5% of scroll (≈7 frames) */
+          fadeoutEl.style.opacity = self.progress > 0.95
+            ? ((self.progress - 0.95) / 0.05).toFixed(3)
+            : 0;
+        }
+      });
+    }
+
+    /* Skip button — scroll to end of frame section */
+    skipFramesBtn.addEventListener('click', () => {
+      gsap.to(window, {
+        scrollTo: frameSection.offsetTop + frameSection.offsetHeight,
+        duration: 0.8, ease: 'power2.inOut'
+      });
+    });
+
+    /* ── NAVBAR SCROLL BEHAVIOR ────────────────────────────────────── */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 30);
+    });
+
+    /* Active nav link on scroll */
+    const sections = ['hero','about','skills','projects','creative','contact'];
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    const obsOpts = { threshold: 0.4 };
+    const sectionObs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(l => {
+            l.classList.toggle('active', l.getAttribute('href') === '#' + entry.target.id);
+          });
+        }
+      });
+    }, obsOpts);
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) sectionObs.observe(el);
+    });
+
+    /* ── HAMBURGER MENU ────────────────────────────────────────────── */
+    const hamburger   = document.getElementById('hamburger');
+    const navOverlay  = document.getElementById('nav-overlay');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navOverlay.classList.toggle('open');
+    });
+
+    function closeNav() {
+      hamburger.classList.remove('open');
+      navOverlay.classList.remove('open');
+    }
+
+    /* ── HERO BUTTON ANIMATION ──────────────────────────────────────── */
+    ScrollTrigger.create({
+      trigger: '#hero',
+      start: 'top 90%',
+      once: true,
+      onEnter: () => {
+        gsap.from('#hero-btns',  { y: 20, opacity: 0, duration: 0.9, ease: 'power3.out' });
+        gsap.from('#scroll-ind', { opacity: 0, duration: 1, delay: 0.4, ease: 'power2.out' });
+      }
+    });
+
+    /* ── ABOUT SCROLL ANIMATIONS ───────────────────────────────────── */
+    gsap.from('#about-left', {
+      scrollTrigger: { trigger: '#about', start: 'top 75%' },
+      x: -60, opacity: 0, duration: 1, ease: 'power3.out'
+    });
+    gsap.from('#about-right', {
+      scrollTrigger: { trigger: '#about', start: 'top 75%' },
+      x: 60, opacity: 0, duration: 1, ease: 'power3.out'
+    });
+
+    /* Counter animation */
+    document.querySelectorAll('.stat-number').forEach(el => {
+      const target = parseInt(el.dataset.target);
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 85%',
+        once: true,
+        onEnter: () => {
+          gsap.to({ val: 0 }, {
+            val: target, duration: 1.5, ease: 'power2.out',
+            onUpdate: function() {
+              el.textContent = Math.round(this.targets()[0].val) + '+';
+            }
+          });
+        }
+      });
+    });
+
+    /* ── SKILLS SCROLL ANIMATION ───────────────────────────────────── */
+    gsap.from('.skill-card', {
+      scrollTrigger: { trigger: '#skills-grid', start: 'top 80%' },
+      y: 40, opacity: 0, duration: 0.6,
+      stagger: 0.08, ease: 'power3.out'
+    });
+
+    /* ── PROJECTS SCROLL ANIMATION ─────────────────────────────────── */
+    gsap.from('.project-card', {
+      scrollTrigger: { trigger: '#projects', start: 'top 80%' },
+      y: 50, opacity: 0, duration: 0.6,
+      stagger: 0.1, ease: 'power3.out'
+    });
+
+    /* ── CAROUSEL ──────────────────────────────────────────────────── */
+    (function initCarousel() {
+      const track  = document.getElementById('carousel-track');
+      const dotsEl = document.getElementById('carousel-dots');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+
+      const cards = track.querySelectorAll('.project-card');
+      const total = cards.length;
+      let current = 0;
+
+      // Build dots
+      cards.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        d.addEventListener('click', () => goTo(i));
+        dotsEl.appendChild(d);
+      });
+
+      function getCardWidth() {
+        return cards[0].offsetWidth + 32; // card + gap
+      }
+
+      function goTo(idx) {
+        current = Math.max(0, Math.min(idx, total - 1));
+        const offset = current * getCardWidth();
+        gsap.to(track, { x: -offset, duration: 0.5, ease: 'power2.out' });
+        dotsEl.querySelectorAll('.carousel-dot').forEach((d, i) => {
+          d.classList.toggle('active', i === current);
+        });
+      }
+
+      prevBtn.addEventListener('click', () => goTo(current - 1));
+      nextBtn.addEventListener('click', () => goTo(current + 1));
+
+      // Drag support
+      let startX = 0, dragging = false;
+      const wrap = document.getElementById('carousel-wrap');
+
+      wrap.addEventListener('mousedown',  e => { startX = e.clientX; dragging = true; });
+      wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dragging = true; }, { passive: true });
+      wrap.addEventListener('mouseup',    e => { if (!dragging) return; const dx = e.clientX - startX; if (dx < -50) goTo(current + 1); if (dx > 50) goTo(current - 1); dragging = false; });
+      wrap.addEventListener('touchend',   e => { if (!dragging) return; const dx = e.changedTouches[0].clientX - startX; if (dx < -50) goTo(current + 1); if (dx > 50) goTo(current - 1); dragging = false; });
+    })();
+
+    /* ── CREATIVE TABS ─────────────────────────────────────────────── */
+    const tabMap = { motion: 'tab-motion', video: 'tab-video', threed: 'tab-threed' };
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const targetId = tabMap[btn.dataset.tab];
+        document.querySelectorAll('.creative-panel').forEach(p => {
+          if (p.id === targetId) {
+            p.classList.add('active');
+            gsap.from(p.querySelectorAll('.creative-card'), {
+              y: 20, opacity: 0, duration: 0.4, stagger: 0.07, ease: 'power2.out'
+            });
+          } else {
+            p.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    /* ── CONTACT / CREATIVE SCROLL ANIMATIONS ──────────────────────── */
+    gsap.from('.creative-card', {
+      scrollTrigger: { trigger: '#creative', start: 'top 80%' },
+      y: 30, opacity: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out'
+    });
+
+    gsap.from('.social-link', {
+      scrollTrigger: { trigger: '#contact', start: 'top 80%' },
+      y: 20, opacity: 0, duration: 0.5, stagger: 0.06, ease: 'power2.out'
+    });
+
+    /* ── MACBOOK PLACEHOLDER ANIMATION ─────────────────────────────── */
+    gsap.from('#macbook-placeholder', {
+      scrollTrigger: {
+        trigger: '#macbook-section',
+        start: 'top 60%',
+        end: 'bottom top',
+        scrub: 1
+      },
+      opacity: 0, y: 40
+    });
+
+    /* ── GENERAL SECTION FADE IN ────────────────────────────────────── */
+    document.querySelectorAll('section, #contact').forEach(sec => {
+      if (sec.id === 'hero' || sec.id === 'macbook-section') return;
+      gsap.from(sec.querySelector('.section-label, .section-title, .about-headline, .contact-sub') || sec, {
+        scrollTrigger: { trigger: sec, start: 'top 85%', once: true },
+        y: 25, opacity: 0, duration: 0.7, ease: 'power2.out'
+      });
+    });
+  </script>
+</body>
+</html>
