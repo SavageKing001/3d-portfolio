@@ -76,12 +76,18 @@
     #video-intro {
       position: fixed;
       inset: 0;
-      z-index: 9999;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
       background: #040404;
+      z-index: 9999;
     }
     #intro-video {
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
       object-fit: cover;
+      object-position: center;
       display: block;
     }
     #skip-intro {
@@ -190,6 +196,7 @@
     #hero spline-viewer {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
+      height: 100dvh;
       pointer-events: all;
       z-index: 0;
     }
@@ -379,20 +386,51 @@
     .skill-card:hover .skill-pills .pill:nth-child(6) { transition-delay: .25s; }
     .skill-card:hover .skill-pills .pill:nth-child(7) { transition-delay: .30s; }
 
-    /* ─── SKILLS DIAGRAM ────────────────────────────────────────── */
-    .skills-diagram { margin-top: 5rem; text-align: center; }
-    .skills-diagram-sub {
-      color: var(--muted); font-size: 0.9rem;
-      margin-bottom: 2rem; letter-spacing: 0.04em;
+    /* ─── SKILLS DIAGRAM SECTION ────────────────────────────────── */
+    #skills-diagram {
+      width: 100%;
+      background: #040404;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
     }
+    .diagram-header {
+      text-align: center;
+      padding: 80px 20px 40px;
+    }
+    .diagram-header .section-label { margin-bottom: 0.75rem; }
+    .diagram-header h2 {
+      font-family: 'Manrope', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -0.02em; margin-bottom: 0.75rem;
+    }
+    .diagram-header p { color: var(--muted); font-size: 0.9rem; letter-spacing: 0.04em; }
     .diagram-embed {
-      width: 100%; height: 600px;
-      border-radius: 16px; overflow: hidden;
       position: relative;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
+      width: 100%; height: 600px;
+      overflow: hidden;
     }
-    .diagram-embed spline-viewer { width: 100%; height: 100%; pointer-events: all; }
+    .diagram-fade-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, #040404 0%, transparent 100%);
+      z-index: 10; pointer-events: none;
+    }
+    .diagram-fade-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to top, #040404 0%, transparent 100%);
+      z-index: 10; pointer-events: none;
+    }
+    .diagram-embed spline-viewer { width: 100%; height: 100%; display: block; pointer-events: all; }
+    @media (max-width: 768px) {
+      .diagram-embed { height: 350px; }
+      #hero spline-viewer { height: 100dvh; }
+    }
+    @media (max-width: 480px) {
+      .diagram-embed { height: 280px; }
+    }
 
     /* ─── PILL BASE ─────────────────────────────────────────────── */
     .pill { transition: opacity .25s, transform .25s, background .2s, color .2s, border-color .2s; }
@@ -819,17 +857,23 @@
       </div>
     </div>
 
-    <!-- Part B — Skills Diagram -->
-    <div class="skills-diagram">
-      <div class="section-label" style="text-align:center; margin-bottom:0.75rem;">How My Skills Connect</div>
-      <p class="skills-diagram-sub">Click any node to explore</p>
-      <div class="diagram-embed" id="diagram-embed">
-        <spline-viewer
-          id="skills-spline"
-          data-src="https://prod.spline.design/aK6I1zQLPWuWTVGU/scene.splinecode"
-          style="width:100%;height:100%;pointer-events:all;">
-        </spline-viewer>
-      </div>
+  </section>
+
+  <!-- ── SKILLS DIAGRAM ────────────────────────────────────────────── -->
+  <section id="skills-diagram">
+    <div class="diagram-header">
+      <span class="section-label">Skills Map</span>
+      <h2>How My Skills Connect</h2>
+      <p>Click any node to explore</p>
+    </div>
+    <div class="diagram-embed" id="diagram-embed">
+      <div class="diagram-fade-top"></div>
+      <spline-viewer
+        id="skills-spline"
+        data-src="https://prod.spline.design/aK6I1zQLPWuWTVGU/scene.splinecode"
+        style="width:100%;height:100%;display:block;pointer-events:all;">
+      </spline-viewer>
+      <div class="diagram-fade-bottom"></div>
     </div>
   </section>
 
