@@ -5,7 +5,7 @@ const projects = [
   {
     id: '01',
     name: 'Geopolitical Signal Engine',
-    images: ['gp1.png', 'gp2.png', 'gp3.png'],
+    images: ['/gp1.png', '/gp2.png', '/gp3.png'],
     problem: 'Markets move before you hear the news.',
     journey: 'Python → News APIs → NLP → Sentiment Scoring → Financial APIs → Price Correlation Models',
     solution: 'Reads global news in real-time and outputs a probability score of stock price movement before the market reacts.',
@@ -25,7 +25,7 @@ const projects = [
   {
     id: '03',
     name: 'LoanBook',
-    images: ['lb1.png', 'lb2.png', 'lb3.png'],
+    images: ['/lb1.png', '/lb2.png', '/lb3.png'],
     problem: 'Lenders forget. Borrowers disappear. Money is lost.',
     journey: 'React → Node.js → MongoDB → WhatsApp API → Interest Calculator → Push Notifications',
     solution: 'Tracks every loan, calculates interest automatically, sends WhatsApp reminders on exact due dates.',
@@ -45,7 +45,7 @@ const projects = [
   {
     id: '05',
     name: 'MangaFlow',
-    images: ['mf-1.png', 'mf-2.png'],
+    images: ['/mf-1.png', '/mf-2.png'],
     problem: '[CLASSIFIED]',
     journey: '[CLASSIFIED]',
     solution: 'Details withheld intentionally. This one is not ready to be talked about yet.',
@@ -55,7 +55,7 @@ const projects = [
   {
     id: '06',
     name: 'Website Builder',
-    images: ['wb1.png'],
+    images: ['/wb1.png'],
     problem: 'Building a website still takes days.',
     journey: 'Claude API → Prompt Parser → AI Asset Generation → React → Code Generation Engine',
     solution: 'Describe it. Generate it. Deploy it. From prompt to production in minutes.',
@@ -65,7 +65,7 @@ const projects = [
   {
     id: '07',
     name: 'Synthiq',
-    images: ['sq1.png', 'sq2.png'],
+    images: ['/sq1.png', '/sq2.png'],
     problem: 'Three AIs. Three tabs. One broken workflow.',
     journey: 'React → OpenAI API → Anthropic API → Gemini API → Routing Layer → Unified Dashboard',
     solution: 'One prompt. Three minds. The right AI picks itself based on what you need.',
