@@ -1,4 +1,6 @@
-# No build command needed for static site
+[build]
+  publish = "public"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
