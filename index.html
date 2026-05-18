@@ -435,9 +435,12 @@
     /* ─── PILL BASE ─────────────────────────────────────────────── */
     .pill {
       transition: opacity .25s, transform .25s, background .2s, color .2s, border-color .2s;
-      display: inline-flex; align-items: center; margin: 3px;
+      display: inline-flex; align-items: center;
+      white-space: nowrap; margin: 3px;
     }
-    .skill-pills, .proj-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-pills, .proj-pills, .proj-tech-pills {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    }
 
     /* ─── PROJECTS — VERTICAL STACK ─────────────────────────────── */
     #projects { overflow: hidden; }
@@ -542,16 +545,7 @@
       font-family: 'Inter', sans-serif;
     }
 
-    .btn-proj-view {
-      display: inline-block;
-      border: 1px solid #333; color: #fff;
-      padding: 10px 24px; border-radius: 6px;
-      font-size: 13px; text-decoration: none;
-      cursor: none; transition: all 0.3s ease;
-      font-family: 'Inter', sans-serif;
-      align-self: flex-start;
-    }
-    .btn-proj-view:hover { border-color: #7B2FFF; color: #7B2FFF; }
+    .btn-proj-view { display: none; }
 
     .classified-text {
       color: #ff3333 !important;
@@ -767,7 +761,7 @@
             <div class="stat-label">Years Learning</div>
           </div>
           <div class="stat-item">
-            <div class="stat-number" data-target="5">0</div>
+            <div class="stat-number" data-target="7">0</div>
             <div class="stat-label">Skill Domains</div>
           </div>
         </div>
@@ -1154,27 +1148,11 @@
       <h2 class="section-title">Beyond Code</h2>
     </div>
 
-    <div class="creative-tabs">
-      <button class="tab-btn active" data-tab="motion">Motion Graphics</button>
-      <button class="tab-btn" data-tab="video">Video Editing</button>
-      <button class="tab-btn" data-tab="threed">3D Work</button>
-    </div>
-
     <div class="creative-panels">
-      <div class="creative-panel active" id="tab-motion">
-        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
-        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
-        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
-      </div>
-      <div class="creative-panel" id="tab-video">
-        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
-        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
-        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
-      </div>
-      <div class="creative-panel" id="tab-threed">
-        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
-        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
-        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">[ Asset coming soon ]</span></div>
+      <div class="creative-panel active">
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">Coming Soon</span></div>
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">Coming Soon</span></div>
+        <div class="creative-card"><div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="creative-card-label">Coming Soon</span></div>
       </div>
     </div>
   </section>
@@ -1337,21 +1315,33 @@
       x: 60, opacity: 0, duration: 1, ease: 'power3.out'
     });
 
-    const counters = document.querySelectorAll('.stat-number');
-    const counterObs = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const target = parseInt(entry.target.dataset.target);
-          const el = entry.target;
-          gsap.to({ val: 0 }, {
-            val: target, duration: 2, ease: 'power2.out',
-            onUpdate: function() { el.textContent = Math.round(this.targets()[0].val) + '+'; }
-          });
-          counterObs.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.5 });
-    counters.forEach(c => counterObs.observe(c));
+    document.addEventListener('DOMContentLoaded', () => {
+      const animateCounter = (el) => {
+        const target = parseInt(el.dataset.target);
+        let current = 0;
+        const increment = target / 60;
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            el.textContent = target + '+';
+            clearInterval(timer);
+          } else {
+            el.textContent = Math.floor(current);
+          }
+        }, 30);
+      };
+
+      const statObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            animateCounter(entry.target);
+            statObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el));
+    });
 
     /* ── SKILLS ANIMATION ──────────────────────────────────────────── */
     gsap.from('.skill-card', {
