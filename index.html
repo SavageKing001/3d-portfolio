@@ -433,113 +433,137 @@
     }
 
     /* ─── PILL BASE ─────────────────────────────────────────────── */
-    .pill { transition: opacity .25s, transform .25s, background .2s, color .2s, border-color .2s; }
+    .pill {
+      transition: opacity .25s, transform .25s, background .2s, color .2s, border-color .2s;
+      display: inline-flex; align-items: center; margin: 3px;
+    }
+    .skill-pills, .proj-pills { display: flex; flex-wrap: wrap; gap: 8px; }
 
     /* ─── PROJECTS — VERTICAL STACK ─────────────────────────────── */
     #projects { overflow: hidden; }
     .projects-header { text-align: center; margin-bottom: 4rem; }
+
     .projects-stack {
-      max-width: 1200px; margin: 0 auto;
-      display: flex; flex-direction: column; gap: 4rem;
+      max-width: 1100px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 80px;
     }
-    .project-stack-card {
-      display: flex; align-items: stretch;
-      background: #0D0D0D;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      overflow: hidden;
-      transition: border-color .3s, box-shadow .3s;
+
+    .project-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      border-left: 2px solid transparent;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
       will-change: transform;
     }
-    .project-stack-card:hover {
-      border-color: rgba(123,47,255,0.4);
-      box-shadow: 0 0 40px rgba(123,47,255,0.1), 0 20px 60px rgba(0,0,0,0.3);
+    .project-card:hover {
+      border-left-color: #7B2FFF;
+      box-shadow: 0 0 40px rgba(123,47,255,0.05);
     }
-    .project-img-side {
-      flex: 0 0 48%;
-      min-height: 300px;
-      position: relative;
+    .project-card.manga-card {
+      box-shadow: 0 0 30px rgba(255,51,51,0.08);
+    }
+    .project-card.manga-card:hover {
+      border-left-color: #ff3333;
+      box-shadow: 0 0 30px rgba(255,51,51,0.12);
+    }
+    .project-card.even .proj-image-col { order: 2; }
+    .project-card.even .proj-content-col { order: 1; }
+
+    .proj-image-col {
+      aspect-ratio: 16/9;
+      border-radius: 12px;
       overflow: hidden;
+      position: relative;
     }
-    .project-stack-card.even .project-img-side { order: 2; }
-    .project-stack-card.even .project-text-side { order: 1; }
-    .img-placeholder {
-      position: absolute; inset: 0;
+    .proj-image-col img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.4s ease;
+    }
+    .proj-image-col:hover img { transform: scale(1.04); }
+
+    .proj-img-placeholder {
+      width: 100%; height: 100%;
       background: #0a0a0a;
-      border: 1px dashed rgba(255,255,255,0.18);
-      display: flex; align-items: center; justify-content: center;
-      color: rgba(255,255,255,0.28);
-      font-size: 0.85rem; letter-spacing: 0.05em;
+      border: 1px dashed #2a2a2a;
+      border-radius: 12px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px;
+    }
+    .proj-img-placeholder span {
+      font-size: 11px; color: #333;
+      letter-spacing: 2px; text-transform: uppercase;
       font-family: 'Inter', sans-serif;
     }
-    .project-text-side {
-      flex: 1;
-      padding: 2.5rem;
-      display: flex; flex-direction: column; gap: 1.25rem;
+
+    .proj-content-col {
+      padding: 40px;
+      display: flex; flex-direction: column; gap: 20px;
     }
-    .proj-header { display: flex; align-items: baseline; gap: 1rem; }
-    .proj-num {
+
+    .proj-number {
+      font-size: 11px; color: #7B2FFF;
+      letter-spacing: 3px; text-transform: uppercase;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+    }
+    .proj-title {
       font-family: 'Manrope', sans-serif;
-      font-size: 0.7rem; font-weight: 700;
-      letter-spacing: 0.15em; color: var(--violet);
-      white-space: nowrap;
+      font-size: 24px; font-weight: 700;
+      color: #fff; line-height: 1.2;
     }
-    .proj-name {
-      font-family: 'Manrope', sans-serif;
-      font-weight: 800; font-size: 1.4rem; line-height: 1.2;
+    .proj-violet-line {
+      width: 40px; height: 2px;
+      background: #7B2FFF; border: none; margin: 0;
     }
-    .proj-divider { border: none; height: 1px; background: var(--border); }
-    .proj-block { display: flex; flex-direction: column; gap: 0.5rem; }
-    .proj-block-label {
-      font-family: 'Manrope', sans-serif;
-      font-size: 0.65rem; font-weight: 700;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--violet);
+    .proj-section-label {
+      font-size: 10px; color: #555;
+      letter-spacing: 2px; text-transform: uppercase;
+      font-family: 'Inter', sans-serif; margin-bottom: 6px;
     }
-    .proj-problem-text { font-size: 0.875rem; color: rgba(255,255,255,0.65); line-height: 1.6; }
-    .proj-built-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
-    .proj-built-list li {
-      font-size: 0.875rem; color: rgba(255,255,255,0.72);
-      line-height: 1.6; padding-left: 1.25rem; position: relative;
+    .proj-text {
+      font-size: 13px; color: #aaa;
+      line-height: 1.6; margin: 0;
     }
-    .proj-built-list li::before { content: '—'; position: absolute; left: 0; color: var(--violet); }
-    .proj-pills { display: flex; flex-wrap: wrap; gap: .5rem; }
-    .proj-pills .pill {
-      opacity: 1; transform: none;
-      padding: .25rem .75rem;
-      background: rgba(123,47,255,0.08);
-      border: 1px solid rgba(123,47,255,0.2);
-      border-radius: 20px;
-      font-size: 0.75rem; color: rgba(255,255,255,0.72);
-      font-weight: 500;
+    .proj-journey {
+      font-size: 12px; color: #666;
+      font-family: monospace; line-height: 1.6; margin: 0;
     }
-    .proj-actions { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.5rem; }
-    .btn-proj-primary {
-      padding: .6rem 1.4rem;
-      background: var(--violet); color: #fff;
-      border: none; border-radius: 6px;
-      font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600;
-      text-decoration: none; cursor: none;
-      transition: background .2s, transform .2s;
+
+    .proj-tech-pills {
+      display: flex; flex-wrap: wrap; gap: 8px;
     }
-    .btn-proj-primary:hover { background: #9850ff; transform: translateY(-2px); }
-    .btn-proj-ghost {
-      padding: .6rem 1.4rem;
-      background: transparent; color: var(--text);
-      border: 1.5px solid var(--border);
-      border-radius: 6px;
-      font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600;
-      text-decoration: none; cursor: none;
-      transition: border-color .2s, transform .2s;
+    .proj-tech-pill {
+      background: #111; border: 1px solid #222;
+      color: #7B2FFF; border-radius: 20px;
+      padding: 4px 12px; font-size: 11px;
+      display: inline-flex; align-items: center;
+      font-family: 'Inter', sans-serif;
     }
-    .btn-proj-ghost:hover { border-color: var(--violet); transform: translateY(-2px); }
+
+    .btn-proj-view {
+      display: inline-block;
+      border: 1px solid #333; color: #fff;
+      padding: 10px 24px; border-radius: 6px;
+      font-size: 13px; text-decoration: none;
+      cursor: none; transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+      align-self: flex-start;
+    }
+    .btn-proj-view:hover { border-color: #7B2FFF; color: #7B2FFF; }
+
+    .classified-text {
+      color: #ff3333 !important;
+      font-family: monospace !important;
+      letter-spacing: 3px;
+    }
 
     @media (max-width: 900px) {
-      .project-stack-card { flex-direction: column; }
-      .project-img-side { flex: none; min-height: 220px; position: relative; height: 220px; }
-      .project-stack-card.even .project-img-side,
-      .project-stack-card.even .project-text-side { order: unset; }
-      .project-text-side { padding: 1.75rem; }
+      .project-card { grid-template-columns: 1fr; }
+      .project-card.even .proj-image-col,
+      .project-card.even .proj-content-col { order: unset; }
+      .proj-content-col { padding: 24px; gap: 16px; }
     }
 
     /* ─── CREATIVE WORK ─────────────────────────────────────────── */
@@ -882,273 +906,239 @@
   <!-- ── SECTION 5 — PROJECTS ──────────────────────────────────────── -->
   <section id="projects">
     <div class="projects-header">
-      <div class="section-label">Work</div>
+      <span class="section-label" style="display:block;font-size:11px;letter-spacing:3px;margin-bottom:12px;">WORK</span>
       <h2 class="section-title">Things I've Built</h2>
     </div>
 
     <div class="projects-stack">
 
       <!-- 01 — Geopolitical Signal Engine (odd: image left) -->
-      <article class="project-stack-card">
-        <div class="project-img-side">
-          <div class="img-placeholder">+ Add Image Later</div>
+      <article class="project-card">
+        <div class="proj-image-col">
+          <img src="gp1.png" alt="Geopolitical Signal Engine">
         </div>
-        <div class="project-text-side">
-          <div class="proj-header">
-            <span class="proj-num">01</span>
-            <h3 class="proj-name">Geopolitical Signal Engine</h3>
+        <div class="proj-content-col">
+          <span class="proj-number">01</span>
+          <h3 class="proj-title">Geopolitical Signal Engine</h3>
+          <hr class="proj-violet-line">
+          <div>
+            <div class="proj-section-label">THE PROBLEM</div>
+            <p class="proj-text">Markets move before you hear the news.</p>
           </div>
-          <hr class="proj-divider">
-          <div class="proj-block">
-            <div class="proj-block-label">The Problem</div>
-            <p class="proj-problem-text">Stock traders miss how global events silently move prices</p>
+          <div>
+            <div class="proj-section-label">THE JOURNEY</div>
+            <p class="proj-journey">Python → News APIs → NLP → Sentiment Scoring → Financial APIs → Price Correlation Models</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">What I Built</div>
-            <ul class="proj-built-list">
-              <li>Aggregates real-time geopolitical news and applies NLP to assess market sentiment</li>
-              <li>Maps news events to stock tickers and predicts directional price impact using AI</li>
-              <li>Delivers actionable trading signals before market reactions occur</li>
-            </ul>
+          <div>
+            <div class="proj-section-label">THE SOLUTION</div>
+            <p class="proj-text">Reads global news in real-time and outputs a probability score of stock price movement before the market reacts.</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">Tech Stack</div>
-            <div class="proj-pills">
-              <span class="pill">Python</span><span class="pill">News APIs</span>
-              <span class="pill">NLP</span><span class="pill">Financial APIs</span>
-            </div>
+          <div class="proj-tech-pills">
+            <span class="proj-tech-pill">Python</span>
+            <span class="proj-tech-pill">News APIs</span>
+            <span class="proj-tech-pill">NLP</span>
+            <span class="proj-tech-pill">Financial APIs</span>
           </div>
-          <div class="proj-actions">
-            <a href="#" class="btn-proj-primary">View Project →</a>
-            <a href="#" class="btn-proj-ghost">Case Study →</a>
-          </div>
+          <a href="#" class="btn-proj-view">View Project →</a>
         </div>
       </article>
 
       <!-- 02 — Jarvis (even: image right) -->
-      <article class="project-stack-card even">
-        <div class="project-img-side">
-          <div class="img-placeholder">+ Add Image Later</div>
+      <article class="project-card even">
+        <div class="proj-image-col">
+          <div class="proj-img-placeholder">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2a2a2a" stroke-width="1.5">
+              <rect x="3" y="5" width="18" height="14" rx="2"/>
+              <circle cx="12" cy="12" r="3"/>
+              <circle cx="17.5" cy="7.5" r="1"/>
+            </svg>
+            <span>Coming Soon</span>
+          </div>
         </div>
-        <div class="project-text-side">
-          <div class="proj-header">
-            <span class="proj-num">02</span>
-            <h3 class="proj-name">Jarvis — Autonomous AI Assistant</h3>
+        <div class="proj-content-col">
+          <span class="proj-number">02</span>
+          <h3 class="proj-title">Jarvis — AI Desktop Assistant</h3>
+          <hr class="proj-violet-line">
+          <div>
+            <div class="proj-section-label">THE PROBLEM</div>
+            <p class="proj-text">I wanted what Tony Stark had.</p>
           </div>
-          <hr class="proj-divider">
-          <div class="proj-block">
-            <div class="proj-block-label">The Problem</div>
-            <p class="proj-problem-text">Repetitive laptop tasks consume hours of productive time daily</p>
+          <div>
+            <div class="proj-section-label">THE JOURNEY</div>
+            <p class="proj-journey">Python → Speech Recognition → LLM APIs → PyAutoGUI → OS Automation → Command Parser</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">What I Built</div>
-            <ul class="proj-built-list">
-              <li>Listens to voice commands and executes OS-level tasks autonomously without manual input</li>
-              <li>Integrates LLM APIs to understand context and handle multi-step instructions dynamically</li>
-              <li>Controls files, browser, applications, and calendar completely hands-free</li>
-            </ul>
+          <div>
+            <div class="proj-section-label">THE SOLUTION</div>
+            <p class="proj-text">Talk to your laptop. It listens. It executes. No clicks. No typing. Just intent.</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">Tech Stack</div>
-            <div class="proj-pills">
-              <span class="pill">Python</span><span class="pill">LLM APIs</span>
-              <span class="pill">OS Automation</span><span class="pill">Speech Recognition</span>
-              <span class="pill">PyAutoGUI</span>
-            </div>
+          <div class="proj-tech-pills">
+            <span class="proj-tech-pill">Python</span>
+            <span class="proj-tech-pill">LLM APIs</span>
+            <span class="proj-tech-pill">PyAutoGUI</span>
+            <span class="proj-tech-pill">Speech Recognition</span>
+            <span class="proj-tech-pill">OS Automation</span>
           </div>
-          <div class="proj-actions">
-            <a href="#" class="btn-proj-primary">View Project →</a>
-            <a href="#" class="btn-proj-ghost">Case Study →</a>
-          </div>
+          <a href="#" class="btn-proj-view">View Project →</a>
         </div>
       </article>
 
       <!-- 03 — LoanBook (odd: image left) -->
-      <article class="project-stack-card">
-        <div class="project-img-side">
-          <div class="img-placeholder">+ Add Image Later</div>
+      <article class="project-card">
+        <div class="proj-image-col">
+          <img src="lb1.png" alt="LoanBook">
         </div>
-        <div class="project-text-side">
-          <div class="proj-header">
-            <span class="proj-num">03</span>
-            <h3 class="proj-name">LoanBook</h3>
+        <div class="proj-content-col">
+          <span class="proj-number">03</span>
+          <h3 class="proj-title">LoanBook</h3>
+          <hr class="proj-violet-line">
+          <div>
+            <div class="proj-section-label">THE PROBLEM</div>
+            <p class="proj-text">Lenders forget. Borrowers disappear. Money is lost.</p>
           </div>
-          <hr class="proj-divider">
-          <div class="proj-block">
-            <div class="proj-block-label">The Problem</div>
-            <p class="proj-problem-text">Informal money lenders lose track of borrowers, interest, and payment dates</p>
+          <div>
+            <div class="proj-section-label">THE JOURNEY</div>
+            <p class="proj-journey">React → Node.js → MongoDB → WhatsApp API → Interest Calculator → Push Notifications</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">What I Built</div>
-            <ul class="proj-built-list">
-              <li>Tracks multiple borrowers, loan amounts, and repayment schedules in one clean dashboard</li>
-              <li>Sends automated monthly reminders to collect interest on exact due dates</li>
-              <li>Auto-calculates compound and simple interest and flags overdue payments instantly</li>
-            </ul>
+          <div>
+            <div class="proj-section-label">THE SOLUTION</div>
+            <p class="proj-text">Tracks every loan, calculates interest automatically, sends WhatsApp reminders on exact due dates.</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">Tech Stack</div>
-            <div class="proj-pills">
-              <span class="pill">React</span><span class="pill">Node.js</span>
-              <span class="pill">MongoDB</span><span class="pill">Push Notifications</span>
-              <span class="pill">REST APIs</span>
-            </div>
+          <div class="proj-tech-pills">
+            <span class="proj-tech-pill">React</span>
+            <span class="proj-tech-pill">Node.js</span>
+            <span class="proj-tech-pill">MongoDB</span>
+            <span class="proj-tech-pill">WhatsApp API</span>
           </div>
-          <div class="proj-actions">
-            <a href="#" class="btn-proj-primary">View Project →</a>
-            <a href="#" class="btn-proj-ghost">Case Study →</a>
-          </div>
+          <a href="#" class="btn-proj-view">View Project →</a>
         </div>
       </article>
 
       <!-- 04 — ResumeAI (even: image right) -->
-      <article class="project-stack-card even">
-        <div class="project-img-side">
-          <div class="img-placeholder">+ Add Image Later</div>
+      <article class="project-card even">
+        <div class="proj-image-col">
+          <div class="proj-img-placeholder">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2a2a2a" stroke-width="1.5">
+              <rect x="3" y="5" width="18" height="14" rx="2"/>
+              <circle cx="12" cy="12" r="3"/>
+              <circle cx="17.5" cy="7.5" r="1"/>
+            </svg>
+            <span>Coming Soon</span>
+          </div>
         </div>
-        <div class="project-text-side">
-          <div class="proj-header">
-            <span class="proj-num">04</span>
-            <h3 class="proj-name">ResumeAI</h3>
+        <div class="proj-content-col">
+          <span class="proj-number">04</span>
+          <h3 class="proj-title">ResumeAI</h3>
+          <hr class="proj-violet-line">
+          <div>
+            <div class="proj-section-label">THE PROBLEM</div>
+            <p class="proj-text">50 jobs. 50 resumes. Nobody has time for that.</p>
           </div>
-          <hr class="proj-divider">
-          <div class="proj-block">
-            <div class="proj-block-label">The Problem</div>
-            <p class="proj-problem-text">Job hunting requires endlessly tailoring resumes for every single application</p>
+          <div>
+            <div class="proj-section-label">THE JOURNEY</div>
+            <p class="proj-journey">Python → LinkedIn Scraper → Gemini API → ATS Scoring → PDF Generator → SMTP</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">What I Built</div>
-            <ul class="proj-built-list">
-              <li>Scrapes LinkedIn job listings to extract role-specific requirements and keywords</li>
-              <li>Uses Gemini API to generate tailored ATS-optimised resumes for each role automatically</li>
-              <li>Emails the final resume with the highest possible ATS match score directly to applicant</li>
-            </ul>
+          <div>
+            <div class="proj-section-label">THE SOLUTION</div>
+            <p class="proj-text">Scrapes job descriptions, generates a tailored resume, emails it to you every morning. Automated.</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">Tech Stack</div>
-            <div class="proj-pills">
-              <span class="pill">Python</span><span class="pill">Gemini API</span>
-              <span class="pill">LinkedIn Scraper</span><span class="pill">SMTP</span>
-              <span class="pill">PDF Generation</span>
-            </div>
+          <div class="proj-tech-pills">
+            <span class="proj-tech-pill">Python</span>
+            <span class="proj-tech-pill">Gemini API</span>
+            <span class="proj-tech-pill">LinkedIn Scraper</span>
+            <span class="proj-tech-pill">SMTP</span>
+            <span class="proj-tech-pill">PDF Generation</span>
           </div>
-          <div class="proj-actions">
-            <a href="#" class="btn-proj-primary">View Project →</a>
-            <a href="#" class="btn-proj-ghost">Case Study →</a>
-          </div>
+          <a href="#" class="btn-proj-view">View Project →</a>
         </div>
       </article>
 
-      <!-- 05 — MangaFlow (odd: image left) -->
-      <article class="project-stack-card">
-        <div class="project-img-side">
-          <div class="img-placeholder">+ Add Image Later</div>
+      <!-- 05 — MangaFlow (odd: image left) — CLASSIFIED -->
+      <article class="project-card manga-card">
+        <div class="proj-image-col">
+          <img src="mf-1.png" alt="MangaFlow">
         </div>
-        <div class="project-text-side">
-          <div class="proj-header">
-            <span class="proj-num">05</span>
-            <h3 class="proj-name">MangaFlow</h3>
+        <div class="proj-content-col">
+          <span class="proj-number">05</span>
+          <h3 class="proj-title">MangaFlow</h3>
+          <hr class="proj-violet-line" style="background:#ff3333;">
+          <div>
+            <div class="proj-section-label">THE PROBLEM</div>
+            <p class="proj-text classified-text">[CLASSIFIED]</p>
           </div>
-          <hr class="proj-divider">
-          <div class="proj-block">
-            <div class="proj-block-label">The Problem</div>
-            <p class="proj-problem-text">Translating manga panels manually is slow, expensive, and error-prone</p>
+          <div>
+            <div class="proj-section-label">THE JOURNEY</div>
+            <p class="proj-journey classified-text">[CLASSIFIED]</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">What I Built</div>
-            <ul class="proj-built-list">
-              <li>Uses OCR to extract text from manga panels regardless of font or layout complexity</li>
-              <li>Translates extracted text into any target language while preserving panel context</li>
-              <li>Reduces QA time and enables simultaneous multi-language publishing pipelines</li>
-            </ul>
+          <div>
+            <div class="proj-section-label">THE SOLUTION</div>
+            <p class="proj-text classified-text">[CLASSIFIED]</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">Tech Stack</div>
-            <div class="proj-pills">
-              <span class="pill">Python</span><span class="pill">OCR</span>
-              <span class="pill">Translation APIs</span><span class="pill">Image Processing</span>
-              <span class="pill">OpenCV</span>
-            </div>
-          </div>
-          <div class="proj-actions">
-            <a href="#" class="btn-proj-primary">View Project →</a>
-            <a href="#" class="btn-proj-ghost">Case Study →</a>
+          <div class="proj-tech-pills">
+            <span class="proj-tech-pill" style="color:#ff3333;border-color:#331111;font-family:monospace;letter-spacing:2px;">[CLASSIFIED]</span>
           </div>
         </div>
       </article>
 
       <!-- 06 — Website Builder (even: image right) -->
-      <article class="project-stack-card even">
-        <div class="project-img-side">
-          <div class="img-placeholder">+ Add Image Later</div>
+      <article class="project-card even">
+        <div class="proj-image-col">
+          <img src="wb1.png" alt="Website Builder">
         </div>
-        <div class="project-text-side">
-          <div class="proj-header">
-            <span class="proj-num">06</span>
-            <h3 class="proj-name">Website Builder</h3>
+        <div class="proj-content-col">
+          <span class="proj-number">06</span>
+          <h3 class="proj-title">Website Builder</h3>
+          <hr class="proj-violet-line">
+          <div>
+            <div class="proj-section-label">THE PROBLEM</div>
+            <p class="proj-text">Building a website still takes days.</p>
           </div>
-          <hr class="proj-divider">
-          <div class="proj-block">
-            <div class="proj-block-label">The Problem</div>
-            <p class="proj-problem-text">Building a complete website still requires hours of work even with AI tools</p>
+          <div>
+            <div class="proj-section-label">THE JOURNEY</div>
+            <p class="proj-journey">Claude API → Prompt Parser → AI Asset Generation → React → Code Generation Engine</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">What I Built</div>
-            <ul class="proj-built-list">
-              <li>Accepts a natural language prompt and generates complete site structure, layout, and copy</li>
-              <li>Integrates AI image/video generation for hero assets based on a secondary prompt</li>
-              <li>Uses Claude API for intelligent code generation producing clean production-ready output</li>
-            </ul>
+          <div>
+            <div class="proj-section-label">THE SOLUTION</div>
+            <p class="proj-text">Describe it. Generate it. Deploy it. From prompt to production in minutes.</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">Tech Stack</div>
-            <div class="proj-pills">
-              <span class="pill">Claude API</span><span class="pill">React</span>
-              <span class="pill">Image Generation AI</span><span class="pill">HTML/CSS/JS</span>
-            </div>
+          <div class="proj-tech-pills">
+            <span class="proj-tech-pill">Claude API</span>
+            <span class="proj-tech-pill">React</span>
+            <span class="proj-tech-pill">AI Generation</span>
+            <span class="proj-tech-pill">JavaScript</span>
           </div>
-          <div class="proj-actions">
-            <a href="#" class="btn-proj-primary">View Project →</a>
-            <a href="#" class="btn-proj-ghost">Case Study →</a>
-          </div>
+          <a href="#" class="btn-proj-view">View Project →</a>
         </div>
       </article>
 
-      <!-- 07 — Triad (odd: image left) -->
-      <article class="project-stack-card">
-        <div class="project-img-side">
-          <div class="img-placeholder">+ Add Image Later</div>
+      <!-- 07 — Synthiq (odd: image left) -->
+      <article class="project-card">
+        <div class="proj-image-col">
+          <img src="sq1.png" alt="Synthiq">
         </div>
-        <div class="project-text-side">
-          <div class="proj-header">
-            <span class="proj-num">07</span>
-            <h3 class="proj-name">Triad — Unified AI Gateway</h3>
+        <div class="proj-content-col">
+          <span class="proj-number">07</span>
+          <h3 class="proj-title">Synthiq</h3>
+          <hr class="proj-violet-line">
+          <div>
+            <div class="proj-section-label">THE PROBLEM</div>
+            <p class="proj-text">Three AIs. Three tabs. One broken workflow.</p>
           </div>
-          <hr class="proj-divider">
-          <div class="proj-block">
-            <div class="proj-block-label">The Problem</div>
-            <p class="proj-problem-text">Choosing between GPT, Claude, and Gemini for every task creates constant friction</p>
+          <div>
+            <div class="proj-section-label">THE JOURNEY</div>
+            <p class="proj-journey">React → OpenAI API → Anthropic API → Gemini API → Routing Layer → Unified Dashboard</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">What I Built</div>
-            <ul class="proj-built-list">
-              <li>Integrates OpenAI, Anthropic, and Gemini APIs under one single unified interface</li>
-              <li>Analyses each prompt and recommends the optimal AI model based on task type and strength</li>
-              <li>Reduces context-switching for power users and guides non-technical users to the right model</li>
-            </ul>
+          <div>
+            <div class="proj-section-label">THE SOLUTION</div>
+            <p class="proj-text">One prompt. Three minds. The right AI picks itself based on what you need.</p>
           </div>
-          <div class="proj-block">
-            <div class="proj-block-label">Tech Stack</div>
-            <div class="proj-pills">
-              <span class="pill">React</span><span class="pill">OpenAI API</span>
-              <span class="pill">Anthropic API</span><span class="pill">Gemini API</span>
-              <span class="pill">Node.js</span>
-            </div>
+          <div class="proj-tech-pills">
+            <span class="proj-tech-pill">React</span>
+            <span class="proj-tech-pill">OpenAI API</span>
+            <span class="proj-tech-pill">Anthropic API</span>
+            <span class="proj-tech-pill">Gemini API</span>
+            <span class="proj-tech-pill">Node.js</span>
           </div>
-          <div class="proj-actions">
-            <a href="#" class="btn-proj-primary">View Project →</a>
-            <a href="#" class="btn-proj-ghost">Case Study →</a>
-          </div>
+          <a href="#" class="btn-proj-view">View Project →</a>
         </div>
       </article>
 
@@ -1261,7 +1251,7 @@
       requestAnimationFrame(animCursor);
     })();
 
-    document.querySelectorAll('a, button, .skill-card, .project-stack-card, .tab-btn, .creative-card')
+    document.querySelectorAll('a, button, .skill-card, .project-card, .tab-btn, .creative-card')
       .forEach(el => {
         el.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
         el.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
@@ -1347,18 +1337,21 @@
       x: 60, opacity: 0, duration: 1, ease: 'power3.out'
     });
 
-    document.querySelectorAll('.stat-number').forEach(el => {
-      const target = parseInt(el.dataset.target);
-      ScrollTrigger.create({
-        trigger: el, start: 'top 85%', once: true,
-        onEnter: () => {
+    const counters = document.querySelectorAll('.stat-number');
+    const counterObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const target = parseInt(entry.target.dataset.target);
+          const el = entry.target;
           gsap.to({ val: 0 }, {
-            val: target, duration: 1.5, ease: 'power2.out',
+            val: target, duration: 2, ease: 'power2.out',
             onUpdate: function() { el.textContent = Math.round(this.targets()[0].val) + '+'; }
           });
+          counterObs.unobserve(entry.target);
         }
       });
-    });
+    }, { threshold: 0.5 });
+    counters.forEach(c => counterObs.observe(c));
 
     /* ── SKILLS ANIMATION ──────────────────────────────────────────── */
     gsap.from('.skill-card', {
@@ -1367,7 +1360,7 @@
     });
 
     /* ── PROJECTS — SLIDE UP ON SCROLL ─────────────────────────────── */
-    gsap.utils.toArray('.project-stack-card').forEach(card => {
+    gsap.utils.toArray('.project-card').forEach(card => {
       gsap.fromTo(card,
         { y: 60, opacity: 0 },
         {
