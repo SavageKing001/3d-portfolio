@@ -6,16 +6,13 @@
   <title>Sai Vaibhav — Full-Stack Developer & Creative Designer</title>
 
   <!-- Preload Videos -->
-  <link rel="preload" as="video" href="/Starting%20Animation.mp4" type="video/mp4">
-  <link rel="preload" as="video" href="/Ending%20Animation.mp4" type="video/mp4">
+  <link rel="preload" as="video" href="/public/Starting%20Animation.mp4" type="video/mp4">
+  <link rel="preload" as="video" href="/public/Ending%20Animation.mp4" type="video/mp4">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-
-  <!-- Tailwind CDN (for React components) -->
-  <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -441,126 +438,192 @@
       display: inline-flex; align-items: center;
       white-space: nowrap; margin: 3px;
     }
-    .skill-pills, .proj-pills, .proj-tech-pills {
+    .skill-pills, .proj-pills {
       display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
     }
 
-    /* ─── PROJECTS — VERTICAL STACK ─────────────────────────────── */
-    #projects { overflow: hidden; }
-    .projects-header { text-align: center; margin-bottom: 4rem; }
-
-    .projects-stack {
-      max-width: 1100px; margin: 0 auto;
-      display: flex; flex-direction: column; gap: 80px;
+    /* ─── PROJECTS — STACK SCROLL ───────────────────────────────── */
+    #projects { overflow: visible; padding: 7rem 0; }
+    .projects-header {
+      text-align: center;
+      margin-bottom: 4rem;
+      padding: 0 4rem;
+    }
+    .projects-header h2 {
+      font-family: 'Manrope', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-top: 0.5rem;
     }
 
-    .project-card {
+    .stack-container {
+      position: relative;
+      padding: 20vh 0 60vh 0;
+    }
+
+    .stack-card {
+      position: sticky;
+      top: 10vh;
+      width: 90%;
+      max-width: 1100px;
+      margin: 0 auto 120px auto;
+      border-radius: 20px;
+      background: #0D0D0D;
+      border: 1px solid #1a1a1a;
+      transform-origin: top center;
+      will-change: transform;
+      transition: box-shadow 0.3s ease;
+      overflow: hidden;
+    }
+
+    .stack-card:hover {
+      box-shadow: 0 0 40px rgba(123,47,255,0.08);
+    }
+
+    .stack-card.classified-card {
+      border-color: rgba(255, 51, 51, 0.3);
+      box-shadow: 0 0 30px rgba(255, 51, 51, 0.08);
+    }
+    .stack-card.classified-card:hover {
+      box-shadow: 0 0 40px rgba(255, 51, 51, 0.15);
+    }
+
+    .card-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      align-items: center;
-      border-left: 2px solid transparent;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      will-change: transform;
+      min-height: 420px;
     }
-    .project-card:hover {
-      border-left-color: #7B2FFF;
-      box-shadow: 0 0 40px rgba(123,47,255,0.05);
-    }
-    .project-card.manga-card {
-      box-shadow: 0 0 30px rgba(255,51,51,0.08);
-    }
-    .project-card.manga-card:hover {
-      border-left-color: #ff3333;
-      box-shadow: 0 0 30px rgba(255,51,51,0.12);
-    }
-    .project-card.even .proj-image-col { order: 2; }
-    .project-card.even .proj-content-col { order: 1; }
 
-    .proj-image-col {
-      aspect-ratio: 16/9;
-      border-radius: 12px;
+    .stack-card:nth-child(even) .card-image { order: 2; }
+    .stack-card:nth-child(even) .card-content { order: 1; }
+
+    .card-image {
       overflow: hidden;
-      position: relative;
+      background: #080808;
     }
-    .proj-image-col img {
-      width: 100%; height: 100%;
-      object-fit: cover; display: block;
-      transition: transform 0.4s ease;
-    }
-    .proj-image-col:hover img { transform: scale(1.04); }
 
-    .proj-img-placeholder {
-      width: 100%; height: 100%;
-      background: #0a0a0a;
-      border: 1px dashed #2a2a2a;
-      border-radius: 12px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform 0.6s ease;
+    }
+
+    .card-image img:hover { transform: scale(1.04); }
+
+    .card-placeholder {
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed #222;
       gap: 12px;
-    }
-    .proj-img-placeholder span {
-      font-size: 11px; color: #333;
-      letter-spacing: 2px; text-transform: uppercase;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .proj-content-col {
-      padding: 40px;
-      display: flex; flex-direction: column; gap: 20px;
+      color: #333;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
 
-    .proj-number {
-      font-size: 11px; color: #7B2FFF;
-      letter-spacing: 3px; text-transform: uppercase;
-      font-family: 'Inter', sans-serif; font-weight: 600;
+    .card-content {
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
     }
-    .proj-title {
+
+    .proj-num {
+      font-size: 11px;
+      color: #7B2FFF;
+      letter-spacing: 3px;
+      font-family: monospace;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .proj-name {
+      font-size: clamp(20px, 2.5vw, 28px);
+      font-weight: 700;
+      color: #ffffff;
       font-family: 'Manrope', sans-serif;
-      font-size: 24px; font-weight: 700;
-      color: #fff; line-height: 1.2;
-    }
-    .proj-violet-line {
-      width: 40px; height: 2px;
-      background: #7B2FFF; border: none; margin: 0;
-    }
-    .proj-section-label {
-      font-size: 10px; color: #555;
-      letter-spacing: 2px; text-transform: uppercase;
-      font-family: 'Inter', sans-serif; margin-bottom: 6px;
-    }
-    .proj-text {
-      font-size: 13px; color: #aaa;
-      line-height: 1.6; margin: 0;
-    }
-    .proj-journey {
-      font-size: 12px; color: #666;
-      font-family: monospace; line-height: 1.6; margin: 0;
+      margin: 0 0 8px 0;
+      line-height: 1.2;
     }
 
-    .proj-tech-pills {
-      display: flex; flex-wrap: wrap; gap: 8px;
-    }
-    .proj-tech-pill {
-      background: #111; border: 1px solid #222;
-      color: #7B2FFF; border-radius: 20px;
-      padding: 4px 12px; font-size: 11px;
-      display: inline-flex; align-items: center;
-      font-family: 'Inter', sans-serif;
+    .proj-divider {
+      width: 40px;
+      height: 2px;
+      background: linear-gradient(90deg, #7B2FFF, #00F5FF);
+      border-radius: 2px;
     }
 
-    .btn-proj-view { display: none; }
+    .proj-label {
+      font-size: 9px;
+      color: #444;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+    }
 
-    .classified-text {
+    .proj-block p {
+      font-size: 13px;
+      color: #aaa;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .journey-text {
+      font-family: monospace !important;
+      font-size: 11px !important;
+      color: #555 !important;
+    }
+
+    .proj-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .proj-pills .pill {
+      background: #111;
+      border: 1px solid #222;
+      color: #7B2FFF;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-family: monospace;
+      white-space: nowrap;
+    }
+
+    .classified-card .proj-num,
+    .classified-card .proj-name,
+    .classified-card .proj-label,
+    .classified-card .proj-block p,
+    .classified-card .journey-text,
+    .classified-card .proj-pills .pill {
       color: #ff3333 !important;
       font-family: monospace !important;
-      letter-spacing: 3px;
+      letter-spacing: 3px !important;
+    }
+    .classified-card .proj-divider {
+      background: #ff3333;
     }
 
-    @media (max-width: 900px) {
-      .project-card { grid-template-columns: 1fr; }
-      .project-card.even .proj-image-col,
-      .project-card.even .proj-content-col { order: unset; }
-      .proj-content-col { padding: 24px; gap: 16px; }
+    @media (max-width: 768px) {
+      #projects { padding: 5rem 0; }
+      .projects-header { padding: 0 1.5rem; }
+      .card-inner { grid-template-columns: 1fr; }
+      .stack-card:nth-child(even) .card-image,
+      .stack-card:nth-child(even) .card-content { order: unset; }
+      .card-image { min-height: 220px; max-height: 280px; }
+      .card-content { padding: 32px 24px; }
+      .stack-card { margin-bottom: 80px; }
     }
 
     /* ─── CREATIVE WORK ─────────────────────────────────────────── */
@@ -683,30 +746,6 @@
     @keyframes blobFloat {
       from { transform: translate(0,0) scale(1); }
       to   { transform: translate(20px,-20px) scale(1.05); }
-    }
-
-    /* ─── PROJECTS REACT ROOT ───────────────────────────────────── */
-    #projects-root { height: 100vh; background: #040404; width: 100%; }
-    #projects-root section#projects { padding: 0 !important; }
-    .scroll-stack-scroller::-webkit-scrollbar { display: none; }
-    .scroll-stack-inner::-webkit-scrollbar { display: none; }
-
-    /* ─── SCROLL STACK MOBILE ───────────────────────────────────── */
-    @media (max-width: 768px) {
-      .project-stack-card > div {
-        grid-template-columns: 1fr !important;
-      }
-      .project-stack-card > div > div {
-        order: unset !important;
-      }
-      .project-stack-card img {
-        min-height: 220px !important;
-        max-height: 280px !important;
-      }
-      .scroll-stack-inner {
-        padding-left: 16px !important;
-        padding-right: 16px !important;
-      }
     }
   </style>
 </head>
@@ -924,8 +963,244 @@
 
   <div class="grad-divider"></div>
 
-  <!-- ── SECTION 5 — PROJECTS (React) ──── -->
-  <div id="projects-root"></div>
+  <!-- ── SECTION 5 — PROJECTS ──────────────────────────────────────── -->
+  <section id="projects">
+    <div class="projects-header">
+      <span class="section-label">WORK</span>
+      <h2>Things I've Built</h2>
+    </div>
+    <div class="stack-container">
+
+      <!-- PROJECT 01 — Geopolitical Signal Engine -->
+      <div class="stack-card" data-index="0">
+        <div class="card-inner">
+          <div class="card-image">
+            <img src="/public/gp1.png" alt="Geopolitical Signal Engine">
+          </div>
+          <div class="card-content">
+            <span class="proj-num">01</span>
+            <h3 class="proj-name">Geopolitical Signal Engine</h3>
+            <div class="proj-divider"></div>
+            <div class="proj-block">
+              <span class="proj-label">THE PROBLEM</span>
+              <p>Markets move before you hear the news.</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE JOURNEY</span>
+              <p class="journey-text">Python → News APIs → NLP → Sentiment Scoring → Financial APIs → Price Correlation Models</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE SOLUTION</span>
+              <p>Reads global news in real-time and outputs a probability score of stock price movement before the market reacts.</p>
+            </div>
+            <div class="proj-pills">
+              <span class="pill">Python</span>
+              <span class="pill">News APIs</span>
+              <span class="pill">NLP</span>
+              <span class="pill">Financial APIs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT 02 — Jarvis -->
+      <div class="stack-card" data-index="1">
+        <div class="card-inner">
+          <div class="card-image">
+            <div class="card-placeholder">
+              <span>Coming Soon</span>
+            </div>
+          </div>
+          <div class="card-content">
+            <span class="proj-num">02</span>
+            <h3 class="proj-name">Jarvis — AI Desktop Assistant</h3>
+            <div class="proj-divider"></div>
+            <div class="proj-block">
+              <span class="proj-label">THE PROBLEM</span>
+              <p>I wanted what Tony Stark had.</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE JOURNEY</span>
+              <p class="journey-text">Python → Speech Recognition → LLM APIs → PyAutoGUI → OS Automation → Command Parser</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE SOLUTION</span>
+              <p>Talk to your laptop. It listens. It executes. No clicks. No typing. Just intent.</p>
+            </div>
+            <div class="proj-pills">
+              <span class="pill">Python</span>
+              <span class="pill">LLM APIs</span>
+              <span class="pill">PyAutoGUI</span>
+              <span class="pill">Speech Recognition</span>
+              <span class="pill">OS Automation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT 03 — LoanBook -->
+      <div class="stack-card" data-index="2">
+        <div class="card-inner">
+          <div class="card-image">
+            <img src="/public/lb1.png" alt="LoanBook">
+          </div>
+          <div class="card-content">
+            <span class="proj-num">03</span>
+            <h3 class="proj-name">LoanBook</h3>
+            <div class="proj-divider"></div>
+            <div class="proj-block">
+              <span class="proj-label">THE PROBLEM</span>
+              <p>Lenders forget. Borrowers disappear. Money is lost.</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE JOURNEY</span>
+              <p class="journey-text">React → Node.js → MongoDB → WhatsApp API → Interest Calculator → Push Notifications</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE SOLUTION</span>
+              <p>Tracks every loan, calculates interest automatically, sends WhatsApp reminders on exact due dates.</p>
+            </div>
+            <div class="proj-pills">
+              <span class="pill">React</span>
+              <span class="pill">Node.js</span>
+              <span class="pill">MongoDB</span>
+              <span class="pill">WhatsApp API</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT 04 — ResumeAI -->
+      <div class="stack-card" data-index="3">
+        <div class="card-inner">
+          <div class="card-image">
+            <div class="card-placeholder">
+              <span>Coming Soon</span>
+            </div>
+          </div>
+          <div class="card-content">
+            <span class="proj-num">04</span>
+            <h3 class="proj-name">ResumeAI</h3>
+            <div class="proj-divider"></div>
+            <div class="proj-block">
+              <span class="proj-label">THE PROBLEM</span>
+              <p>50 jobs. 50 resumes. Nobody has time for that.</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE JOURNEY</span>
+              <p class="journey-text">Python → LinkedIn Scraper → Gemini API → ATS Scoring → PDF Generator → SMTP</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE SOLUTION</span>
+              <p>Scrapes job descriptions, generates a tailored resume, emails it to you every morning. Automated.</p>
+            </div>
+            <div class="proj-pills">
+              <span class="pill">Python</span>
+              <span class="pill">Gemini API</span>
+              <span class="pill">LinkedIn Scraper</span>
+              <span class="pill">SMTP</span>
+              <span class="pill">PDF Generation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT 05 — MangaFlow (CLASSIFIED) -->
+      <div class="stack-card classified-card" data-index="4">
+        <div class="card-inner">
+          <div class="card-image">
+            <img src="/public/mf-1.png" alt="MangaFlow">
+          </div>
+          <div class="card-content">
+            <span class="proj-num">05</span>
+            <h3 class="proj-name">MangaFlow</h3>
+            <div class="proj-divider"></div>
+            <div class="proj-block">
+              <span class="proj-label">THE PROBLEM</span>
+              <p>[CLASSIFIED]</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE JOURNEY</span>
+              <p class="journey-text">[CLASSIFIED]</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE SOLUTION</span>
+              <p>Details withheld intentionally. This one is not ready to be talked about yet.</p>
+            </div>
+            <div class="proj-pills">
+              <span class="pill">[CLASSIFIED]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT 06 — Website Builder -->
+      <div class="stack-card" data-index="5">
+        <div class="card-inner">
+          <div class="card-image">
+            <img src="/public/wb1.png" alt="Website Builder">
+          </div>
+          <div class="card-content">
+            <span class="proj-num">06</span>
+            <h3 class="proj-name">Website Builder</h3>
+            <div class="proj-divider"></div>
+            <div class="proj-block">
+              <span class="proj-label">THE PROBLEM</span>
+              <p>Building a website still takes days.</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE JOURNEY</span>
+              <p class="journey-text">Claude API → Prompt Parser → AI Asset Generation → React → Code Generation Engine</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE SOLUTION</span>
+              <p>Describe it. Generate it. Deploy it. From prompt to production in minutes.</p>
+            </div>
+            <div class="proj-pills">
+              <span class="pill">Claude API</span>
+              <span class="pill">React</span>
+              <span class="pill">AI Generation</span>
+              <span class="pill">JavaScript</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT 07 — Synthiq -->
+      <div class="stack-card" data-index="6">
+        <div class="card-inner">
+          <div class="card-image">
+            <img src="/public/sq1.png" alt="Synthiq">
+          </div>
+          <div class="card-content">
+            <span class="proj-num">07</span>
+            <h3 class="proj-name">Synthiq</h3>
+            <div class="proj-divider"></div>
+            <div class="proj-block">
+              <span class="proj-label">THE PROBLEM</span>
+              <p>Three AIs. Three tabs. One broken workflow.</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE JOURNEY</span>
+              <p class="journey-text">React → OpenAI API → Anthropic API → Gemini API → Routing Layer → Unified Dashboard</p>
+            </div>
+            <div class="proj-block">
+              <span class="proj-label">THE SOLUTION</span>
+              <p>One prompt. Three minds. The right AI picks itself based on what you need.</p>
+            </div>
+            <div class="proj-pills">
+              <span class="pill">React</span>
+              <span class="pill">OpenAI API</span>
+              <span class="pill">Anthropic API</span>
+              <span class="pill">Gemini API</span>
+              <span class="pill">Node.js</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
 
   <div class="grad-divider"></div>
 
@@ -1017,7 +1292,7 @@
       requestAnimationFrame(animCursor);
     })();
 
-    document.querySelectorAll('a, button, .skill-card, .project-card, .tab-btn, .creative-card')
+    document.querySelectorAll('a, button, .skill-card, .stack-card, .tab-btn, .creative-card')
       .forEach(el => {
         el.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
         el.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
@@ -1026,7 +1301,7 @@
     /* ── VIDEO INTRO ───────────────────────────────────────────────── */
     const videoIntro = document.getElementById('video-intro');
     const v          = document.getElementById('intro-video');
-    const videos     = ['/Starting Animation.mp4', '/Ending Animation.mp4'];
+    const videos     = ['/public/Starting Animation.mp4', '/public/Ending Animation.mp4'];
     let   vidIdx     = 0;
 
     document.body.style.overflow = 'hidden';
@@ -1138,6 +1413,26 @@
       y: 40, opacity: 0, duration: 0.6, stagger: 0.08, ease: 'power3.out'
     });
 
+    /* ── STACK SCROLL ──────────────────────────────────────────────── */
+    const stackCards = document.querySelectorAll('.stack-card');
+
+    function updateStackCards() {
+      stackCards.forEach((card, i) => {
+        const rect = card.getBoundingClientRect();
+        const windowH = window.innerHeight;
+
+        if (rect.top < windowH * 0.15) {
+          const scale = 1 - (i * 0.015);
+          card.style.transform = 'scale(' + Math.max(scale, 0.85) + ')';
+        } else {
+          card.style.transform = 'scale(1)';
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateStackCards, { passive: true });
+    updateStackCards();
+
     /* ── CREATIVE TABS ─────────────────────────────────────────────── */
     const tabMap = { motion: 'tab-motion', video: 'tab-video', threed: 'tab-threed' };
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1201,8 +1496,5 @@
       }
     });
   </script>
-
-  <!-- ── PROJECTS — REACT MOUNT ───────────────────────────────────────── -->
-  <script type="module" src="/main.tsx"></script>
 </body>
 </html>
