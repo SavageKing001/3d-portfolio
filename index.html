@@ -14,6 +14,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
+  <!-- Tailwind CDN (for React components) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -681,6 +684,28 @@
       from { transform: translate(0,0) scale(1); }
       to   { transform: translate(20px,-20px) scale(1.05); }
     }
+
+    /* ─── PROJECTS REACT ROOT ───────────────────────────────────── */
+    #projects-root { height: 100vh; }
+    #projects-root section#projects { padding: 0 !important; }
+
+    /* ─── SCROLL STACK MOBILE ───────────────────────────────────── */
+    @media (max-width: 768px) {
+      .project-stack-card > div {
+        grid-template-columns: 1fr !important;
+      }
+      .project-stack-card > div > div {
+        order: unset !important;
+      }
+      .project-stack-card img {
+        min-height: 220px !important;
+        max-height: 280px !important;
+      }
+      .scroll-stack-inner {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+      }
+    }
   </style>
 </head>
 
@@ -897,247 +922,8 @@
 
   <div class="grad-divider"></div>
 
-  <!-- ── SECTION 5 — PROJECTS ──────────────────────────────────────── -->
-  <section id="projects">
-    <div class="projects-header">
-      <span class="section-label" style="display:block;font-size:11px;letter-spacing:3px;margin-bottom:12px;">WORK</span>
-      <h2 class="section-title">Things I've Built</h2>
-    </div>
-
-    <div class="projects-stack">
-
-      <!-- 01 — Geopolitical Signal Engine (odd: image left) -->
-      <article class="project-card">
-        <div class="proj-image-col">
-          <img src="gp1.png" alt="Geopolitical Signal Engine">
-        </div>
-        <div class="proj-content-col">
-          <span class="proj-number">01</span>
-          <h3 class="proj-title">Geopolitical Signal Engine</h3>
-          <hr class="proj-violet-line">
-          <div>
-            <div class="proj-section-label">THE PROBLEM</div>
-            <p class="proj-text">Markets move before you hear the news.</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE JOURNEY</div>
-            <p class="proj-journey">Python → News APIs → NLP → Sentiment Scoring → Financial APIs → Price Correlation Models</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE SOLUTION</div>
-            <p class="proj-text">Reads global news in real-time and outputs a probability score of stock price movement before the market reacts.</p>
-          </div>
-          <div class="proj-tech-pills">
-            <span class="proj-tech-pill">Python</span>
-            <span class="proj-tech-pill">News APIs</span>
-            <span class="proj-tech-pill">NLP</span>
-            <span class="proj-tech-pill">Financial APIs</span>
-          </div>
-          <a href="#" class="btn-proj-view">View Project →</a>
-        </div>
-      </article>
-
-      <!-- 02 — Jarvis (even: image right) -->
-      <article class="project-card even">
-        <div class="proj-image-col">
-          <div class="proj-img-placeholder">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2a2a2a" stroke-width="1.5">
-              <rect x="3" y="5" width="18" height="14" rx="2"/>
-              <circle cx="12" cy="12" r="3"/>
-              <circle cx="17.5" cy="7.5" r="1"/>
-            </svg>
-            <span>Coming Soon</span>
-          </div>
-        </div>
-        <div class="proj-content-col">
-          <span class="proj-number">02</span>
-          <h3 class="proj-title">Jarvis — AI Desktop Assistant</h3>
-          <hr class="proj-violet-line">
-          <div>
-            <div class="proj-section-label">THE PROBLEM</div>
-            <p class="proj-text">I wanted what Tony Stark had.</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE JOURNEY</div>
-            <p class="proj-journey">Python → Speech Recognition → LLM APIs → PyAutoGUI → OS Automation → Command Parser</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE SOLUTION</div>
-            <p class="proj-text">Talk to your laptop. It listens. It executes. No clicks. No typing. Just intent.</p>
-          </div>
-          <div class="proj-tech-pills">
-            <span class="proj-tech-pill">Python</span>
-            <span class="proj-tech-pill">LLM APIs</span>
-            <span class="proj-tech-pill">PyAutoGUI</span>
-            <span class="proj-tech-pill">Speech Recognition</span>
-            <span class="proj-tech-pill">OS Automation</span>
-          </div>
-          <a href="#" class="btn-proj-view">View Project →</a>
-        </div>
-      </article>
-
-      <!-- 03 — LoanBook (odd: image left) -->
-      <article class="project-card">
-        <div class="proj-image-col">
-          <img src="lb1.png" alt="LoanBook">
-        </div>
-        <div class="proj-content-col">
-          <span class="proj-number">03</span>
-          <h3 class="proj-title">LoanBook</h3>
-          <hr class="proj-violet-line">
-          <div>
-            <div class="proj-section-label">THE PROBLEM</div>
-            <p class="proj-text">Lenders forget. Borrowers disappear. Money is lost.</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE JOURNEY</div>
-            <p class="proj-journey">React → Node.js → MongoDB → WhatsApp API → Interest Calculator → Push Notifications</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE SOLUTION</div>
-            <p class="proj-text">Tracks every loan, calculates interest automatically, sends WhatsApp reminders on exact due dates.</p>
-          </div>
-          <div class="proj-tech-pills">
-            <span class="proj-tech-pill">React</span>
-            <span class="proj-tech-pill">Node.js</span>
-            <span class="proj-tech-pill">MongoDB</span>
-            <span class="proj-tech-pill">WhatsApp API</span>
-          </div>
-          <a href="#" class="btn-proj-view">View Project →</a>
-        </div>
-      </article>
-
-      <!-- 04 — ResumeAI (even: image right) -->
-      <article class="project-card even">
-        <div class="proj-image-col">
-          <div class="proj-img-placeholder">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2a2a2a" stroke-width="1.5">
-              <rect x="3" y="5" width="18" height="14" rx="2"/>
-              <circle cx="12" cy="12" r="3"/>
-              <circle cx="17.5" cy="7.5" r="1"/>
-            </svg>
-            <span>Coming Soon</span>
-          </div>
-        </div>
-        <div class="proj-content-col">
-          <span class="proj-number">04</span>
-          <h3 class="proj-title">ResumeAI</h3>
-          <hr class="proj-violet-line">
-          <div>
-            <div class="proj-section-label">THE PROBLEM</div>
-            <p class="proj-text">50 jobs. 50 resumes. Nobody has time for that.</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE JOURNEY</div>
-            <p class="proj-journey">Python → LinkedIn Scraper → Gemini API → ATS Scoring → PDF Generator → SMTP</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE SOLUTION</div>
-            <p class="proj-text">Scrapes job descriptions, generates a tailored resume, emails it to you every morning. Automated.</p>
-          </div>
-          <div class="proj-tech-pills">
-            <span class="proj-tech-pill">Python</span>
-            <span class="proj-tech-pill">Gemini API</span>
-            <span class="proj-tech-pill">LinkedIn Scraper</span>
-            <span class="proj-tech-pill">SMTP</span>
-            <span class="proj-tech-pill">PDF Generation</span>
-          </div>
-          <a href="#" class="btn-proj-view">View Project →</a>
-        </div>
-      </article>
-
-      <!-- 05 — MangaFlow (odd: image left) — CLASSIFIED -->
-      <article class="project-card manga-card">
-        <div class="proj-image-col">
-          <img src="mf-1.png" alt="MangaFlow">
-        </div>
-        <div class="proj-content-col">
-          <span class="proj-number">05</span>
-          <h3 class="proj-title">MangaFlow</h3>
-          <hr class="proj-violet-line" style="background:#ff3333;">
-          <div>
-            <div class="proj-section-label">THE PROBLEM</div>
-            <p class="proj-text classified-text">[CLASSIFIED]</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE JOURNEY</div>
-            <p class="proj-journey classified-text">[CLASSIFIED]</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE SOLUTION</div>
-            <p class="proj-text classified-text">[CLASSIFIED]</p>
-          </div>
-          <div class="proj-tech-pills">
-            <span class="proj-tech-pill" style="color:#ff3333;border-color:#331111;font-family:monospace;letter-spacing:2px;">[CLASSIFIED]</span>
-          </div>
-        </div>
-      </article>
-
-      <!-- 06 — Website Builder (even: image right) -->
-      <article class="project-card even">
-        <div class="proj-image-col">
-          <img src="wb1.png" alt="Website Builder">
-        </div>
-        <div class="proj-content-col">
-          <span class="proj-number">06</span>
-          <h3 class="proj-title">Website Builder</h3>
-          <hr class="proj-violet-line">
-          <div>
-            <div class="proj-section-label">THE PROBLEM</div>
-            <p class="proj-text">Building a website still takes days.</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE JOURNEY</div>
-            <p class="proj-journey">Claude API → Prompt Parser → AI Asset Generation → React → Code Generation Engine</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE SOLUTION</div>
-            <p class="proj-text">Describe it. Generate it. Deploy it. From prompt to production in minutes.</p>
-          </div>
-          <div class="proj-tech-pills">
-            <span class="proj-tech-pill">Claude API</span>
-            <span class="proj-tech-pill">React</span>
-            <span class="proj-tech-pill">AI Generation</span>
-            <span class="proj-tech-pill">JavaScript</span>
-          </div>
-          <a href="#" class="btn-proj-view">View Project →</a>
-        </div>
-      </article>
-
-      <!-- 07 — Synthiq (odd: image left) -->
-      <article class="project-card">
-        <div class="proj-image-col">
-          <img src="sq1.png" alt="Synthiq">
-        </div>
-        <div class="proj-content-col">
-          <span class="proj-number">07</span>
-          <h3 class="proj-title">Synthiq</h3>
-          <hr class="proj-violet-line">
-          <div>
-            <div class="proj-section-label">THE PROBLEM</div>
-            <p class="proj-text">Three AIs. Three tabs. One broken workflow.</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE JOURNEY</div>
-            <p class="proj-journey">React → OpenAI API → Anthropic API → Gemini API → Routing Layer → Unified Dashboard</p>
-          </div>
-          <div>
-            <div class="proj-section-label">THE SOLUTION</div>
-            <p class="proj-text">One prompt. Three minds. The right AI picks itself based on what you need.</p>
-          </div>
-          <div class="proj-tech-pills">
-            <span class="proj-tech-pill">React</span>
-            <span class="proj-tech-pill">OpenAI API</span>
-            <span class="proj-tech-pill">Anthropic API</span>
-            <span class="proj-tech-pill">Gemini API</span>
-            <span class="proj-tech-pill">Node.js</span>
-          </div>
-          <a href="#" class="btn-proj-view">View Project →</a>
-        </div>
-      </article>
-
-    </div>
-  </section>
+  <!-- ── SECTION 5 — PROJECTS (React) ──── -->
+  <div id="projects-root"></div>
 
   <div class="grad-divider"></div>
 
@@ -1292,6 +1078,7 @@
       });
     }, { threshold: 0.4 });
     sections.forEach(id => { const el = document.getElementById(id); if (el) sectionObs.observe(el); });
+    window.__sectionObs__ = sectionObs;
 
     /* ── HAMBURGER ─────────────────────────────────────────────────── */
     const hamburger  = document.getElementById('hamburger');
@@ -1347,17 +1134,6 @@
     gsap.from('.skill-card', {
       scrollTrigger: { trigger: '#skills-grid', start: 'top 80%' },
       y: 40, opacity: 0, duration: 0.6, stagger: 0.08, ease: 'power3.out'
-    });
-
-    /* ── PROJECTS — SLIDE UP ON SCROLL ─────────────────────────────── */
-    gsap.utils.toArray('.project-card').forEach(card => {
-      gsap.fromTo(card,
-        { y: 60, opacity: 0 },
-        {
-          y: 0, opacity: 1, duration: 0.85, ease: 'power3.out',
-          scrollTrigger: { trigger: card, start: 'top 88%', once: true }
-        }
-      );
     });
 
     /* ── CREATIVE TABS ─────────────────────────────────────────────── */
@@ -1422,6 +1198,26 @@
         });
       }
     });
+  </script>
+
+  <!-- ── PROJECTS — REACT MOUNT ───────────────────────────────────────── -->
+  <script type="module">
+    import React from 'react';
+    import { createRoot } from 'react-dom/client';
+    import ProjectsSection from './ProjectsSection.tsx';
+
+    const container = document.getElementById('projects-root');
+    if (container) {
+      const root = createRoot(container);
+      root.render(React.createElement(ProjectsSection));
+      // Re-observe the React-rendered #projects section for navbar active state
+      setTimeout(() => {
+        const projectsEl = document.getElementById('projects');
+        if (projectsEl && window.__sectionObs__) {
+          window.__sectionObs__.observe(projectsEl);
+        }
+      }, 100);
+    }
   </script>
 </body>
 </html>
