@@ -80,6 +80,9 @@ const ProjectsSection: React.FC = () => {
       id="projects"
       style={{
         background: '#040404',
+        width: '100%',
+        margin: 0,
+        padding: 0,
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -103,7 +106,7 @@ const ProjectsSection: React.FC = () => {
         }}>Things I've Built</h2>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+      <div style={{ flex: 1, minHeight: 0, position: 'relative', background: '#040404', width: '100%' }}>
         <ScrollStack
           useWindowScroll={false}
           itemDistance={120}
