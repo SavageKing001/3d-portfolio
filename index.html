@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="scroll-behavior: auto;">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -24,7 +24,11 @@
 
   <style>
     /* ─── RESET & BASE ──────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
     :root {
       --bg:         #040404;
@@ -443,7 +447,7 @@
     }
 
     /* ─── PROJECTS — STACK SCROLL ───────────────────────────────── */
-    #projects { overflow: visible; padding: 7rem 0; }
+    #projects { overflow: visible; padding: 7rem 0 80px 0; }
     .projects-header {
       text-align: center;
       margin-bottom: 4rem;
@@ -459,12 +463,12 @@
 
     .stack-container {
       position: relative;
-      padding: 20vh 0 60vh 0;
+      padding: 10vh 0 5vh 0;
     }
 
     .stack-card {
       position: sticky;
-      top: 10vh;
+      top: 15vh;
       width: 90%;
       max-width: 1100px;
       margin: 0 auto 120px auto;
@@ -473,7 +477,9 @@
       border: 1px solid #1a1a1a;
       transform-origin: top center;
       will-change: transform;
-      transition: box-shadow 0.3s ease;
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.4s ease,
+                  border-color 0.4s ease;
       overflow: hidden;
     }
 
@@ -508,8 +514,12 @@
       height: 100%;
       object-fit: cover;
       object-position: center top;
-      transition: transform 0.6s ease;
+      transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                  opacity 0.4s ease;
+      opacity: 0;
     }
+
+    .card-image img.loaded { opacity: 1; }
 
     .card-image img:hover { transform: scale(1.04); }
 
@@ -616,7 +626,7 @@
     }
 
     @media (max-width: 768px) {
-      #projects { padding: 5rem 0; }
+      #projects { padding: 5rem 0 60px 0; }
       .projects-header { padding: 0 1.5rem; }
       .card-inner { grid-template-columns: 1fr; }
       .stack-card:nth-child(even) .card-image,
@@ -1416,22 +1426,45 @@
     /* ── STACK SCROLL ──────────────────────────────────────────────── */
     const stackCards = document.querySelectorAll('.stack-card');
 
-    function updateStackCards() {
-      stackCards.forEach((card, i) => {
+    function updateCards() {
+      const cards = document.querySelectorAll('.stack-card');
+      cards.forEach((card, i) => {
         const rect = card.getBoundingClientRect();
         const windowH = window.innerHeight;
 
-        if (rect.top < windowH * 0.15) {
-          const scale = 1 - (i * 0.015);
-          card.style.transform = 'scale(' + Math.max(scale, 0.85) + ')';
+        if (rect.top <= windowH * 0.16) {
+          const cardsAbove = Array.from(cards)
+            .slice(i + 1)
+            .filter(c => c.getBoundingClientRect().top <= windowH * 0.16).length;
+
+          const scale = Math.max(1 - (cardsAbove * 0.03), 0.82);
+          card.style.transform = 'scale(' + scale + ')';
         } else {
           card.style.transform = 'scale(1)';
         }
       });
     }
 
-    window.addEventListener('scroll', updateStackCards, { passive: true });
-    updateStackCards();
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateCards();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+    updateCards();
+
+    /* ── IMAGE LOAD FADE-IN ────────────────────────────────────────── */
+    document.querySelectorAll('.card-image img').forEach(img => {
+      if (img.complete) {
+        img.classList.add('loaded');
+      } else {
+        img.addEventListener('load', () => img.classList.add('loaded'));
+      }
+    });
 
     /* ── CREATIVE TABS ─────────────────────────────────────────────── */
     const tabMap = { motion: 'tab-motion', video: 'tab-video', threed: 'tab-threed' };
