@@ -468,7 +468,7 @@
 
     .stack-card {
       position: sticky;
-      top: 15vh;
+      top: 22vh;
       width: 90%;
       max-width: 1100px;
       margin: 0 auto 120px auto;
@@ -1432,10 +1432,10 @@
         const rect = card.getBoundingClientRect();
         const windowH = window.innerHeight;
 
-        if (rect.top <= windowH * 0.16) {
+        if (rect.top <= windowH * 0.23) {
           const cardsAbove = Array.from(cards)
             .slice(i + 1)
-            .filter(c => c.getBoundingClientRect().top <= windowH * 0.16).length;
+            .filter(c => c.getBoundingClientRect().top <= windowH * 0.23).length;
 
           const scale = Math.max(1 - (cardsAbove * 0.03), 0.82);
           card.style.transform = 'scale(' + scale + ')';
